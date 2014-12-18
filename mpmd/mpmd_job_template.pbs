@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+#PBS -N %jobname%
+#PBS -q np
+#PBS -l EC_total_tasks=%ntasks%
+#PBS -l EC_threads_per_task=%threads_per_task%
+#PBS -l EC_hyperthreads=1
+#PBS -l EC_memory_per_task=%memory%mb
+#PBS -l EC_ecfs=%ecfs%
+#PBS -l EC_mars=%mars%
+#PBS -l walltime=%walltime%
+#PBS -o %logfile%
+#PBS -j oe
+#PBS -M cornelia.schlundt@dwd.de
+
+# Define the taskfile
+TASKFILE=%taskfile%
+
+# Define the way we spawn the mpi program depending on the type of host
+if [[ `hostname` == omlws* ]]; then
+    # ===========
+    # workstation
+    # ===========
+
+    MPIRUN="mpiexec -n %ntasks%"
+else
+    # =========
+    # cca@ecmwf
+    # =========
+
+    # load correct python module
+    module load python
+
+    # To avoid creation of cores in case of abort, which takes ages...
+    module unload atp
+
+    # For OpenMP tasks
+    export OMP_NUM_THREADS=$EC_threads_per_task
+
+    if [[ `hostname` == *ppn* ]]; then
+        # post processing node, no aprun available.
+        module load cray-snplauncher
+        MPIRUN="mpiexec -n $EC_total_tasks"
+    else
+        # compute node!
+        MPIRUN="aprun -N $EC_tasks_per_node -n $EC_total_tasks -d $EC_threads_per_task -j $EC_hyperthreads"
+    fi
+fi
+
+# Finally, run the tasks
+$MPIRUN mpmd.py $TASKFILE

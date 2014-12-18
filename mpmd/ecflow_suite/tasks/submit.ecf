@@ -1,0 +1,10 @@
+%include <slurm.h>
+%include <head.h>
+%PYTHON% %MPMD_SUBMIT_SCRIPT% \
+        --dbfile=%MPMD_DATABASE% \
+        --mode=%MPMD_MODE% --suite_name=%SUITE% \
+        --submit_cmd=%MPMD_SUBMIT_CMD% \
+        --remote_user=%REMOTE_USER% \
+        --remote_host=%REMOTE_HOST% \
+        2>&1 | tee -a %ECF_OUT%%ECF_NAME%.log.all
+%include <tail.h>

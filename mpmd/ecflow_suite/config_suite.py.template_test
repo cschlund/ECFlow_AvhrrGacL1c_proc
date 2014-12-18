@@ -1,0 +1,71 @@
+#!/usr/bin/env python2.7
+
+import os, sys
+
+mysuite = "test_avhrrgac_l1c"
+
+# dearchiving interval: multiple of mpmd_threads_number
+interval_value = 4
+# io offset
+io_offset_value = interval_value - 1
+
+# mpmd_threads_number must be >= $LENGTH defined in config.sh
+mpmd_threads_number = 2
+serial_threads_number = 1
+
+# -- ecgate and cca
+project_name = mysuite
+perm         = "/perm/ms/de/sf7/cschlund"
+scratch      = "/scratch/ms/de/sf7/cschlund"
+pycmsaf      = os.path.join( perm, "pycmsaf" )
+perm_base    = os.path.join( perm, project_name )
+scratch_base = os.path.join( scratch, project_name )
+
+# -- cca:
+cca_tar_download = os.path.join( scratch_base, "ecp_tar_download" )
+cca_tar_upload   = os.path.join( scratch_base, "ecp_tar_upload" )
+cca_pygac        = os.path.join( perm_base, "src", "call_pygac.py" )
+cca_pystat       = os.path.join( perm_base, "src", "call_pystat.py" )
+cca_add2sqlite   = os.path.join( perm_base, "src", "call_add2sqlite.py" )
+cca_maketarfile  = os.path.join( perm_base, "src", "call_maketarfile.py" )
+cca_storedata    = os.path.join( perm_base, "src", "call_storedata.py")
+
+# -- paths to be exported: $PATH, $PYTHONPATH
+pycmsaf_bin  = os.path.join( pycmsaf, "bin" )
+python_path  = "/usr/local/apps/python/current/bin/python"
+
+# -- server settings @ ecgate
+mpmd_mode = "remote"
+mpmd_submit_cmd = "qsub"
+mpmd_submit_script = os.path.join( pycmsaf_bin, "mpmd_submit.py" )
+mpmd_database     = os.path.join( perm_base, "mpmd", "mpmd_test.sqlite3" )
+ecflow_submit     = os.path.join( pycmsaf_bin, "ecf_submit.py" )
+mpmd_client_prog  = os.path.join( pycmsaf_bin, "mpmd_client.py" )
+gacdb_sqlite_file = os.path.join( pycmsaf, "AVHRR_GAC_archive.sqlite3" )
+suite_home_dir    = os.path.join( perm_base, "mpmd/ecflow_suite" )
+ecf_files_dir     = os.path.join( suite_home_dir, "tasks" )
+ecf_include_dir   = os.path.join( suite_home_dir, "include" )
+ecf_home_dir      = os.path.join( scratch_base, "generated" )
+ecf_out_dir       = os.path.join( scratch_base, "log" )
+remote_host_name  = "cca"
+remote_user_name  = "sf7"
+remote_home_dir   = os.path.join( perm_base, "mpmd/generated" )
+remote_log_dir    = os.path.join( scratch_base, "mpmd/log" )
+
+# -- command for submitting serial and mpmd jobs
+serial_job_cmd = "%PYTHON% %ECF_SUBMIT% "\
+            "%REMOTE_USER% %REMOTE_HOST% "\
+            "%ECF_JOB% %REMOTE_LOGDIR%%ECF_NAME%.%ECF_TRYNO% > "\
+            "%ECF_OUT%%ECF_NAME%.%ECF_TRYNO% 2>&1"
+
+mpmd_job_cmd = "%PYTHON% %MPMD_CLIENT% --dbfile=%MPMD_DATABASE% "\
+        "add_task --suite=%SUITE% "\
+        "--queue=%TASK% --ecf_jobfile=%ECF_JOB% "\
+        "--logfile=%ECF_JOBOUT% "\
+        "--remote_ecf_jobfile=%REMOTE_HOME%%ECF_NAME%.job%ECF_TRYNO% "\
+        "--remote_logfile=%REMOTE_LOGDIR%%ECF_NAME%.%ECF_TRYNO% "\
+        "--abs_node_path=%ECF_NAME% > %ECF_OUT%%ECF_NAME%.mpmdsub 2>&1 "\
+
+ecgate_job_cmd = "sbatch %ECF_JOB% > "\
+        "%ECF_OUT%%ECF_NAME%.%ECF_TRYNO%.sub 2>&1"
+

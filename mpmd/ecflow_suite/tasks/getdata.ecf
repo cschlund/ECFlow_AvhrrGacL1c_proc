@@ -1,0 +1,6 @@
+%include <pbs_serial.h>
+%include <head.h>
+echo "I am task %TASK% in family %FAMILY% responsible for dearchiving %TARFILES% from ECFS to CCA: %TAR_DOWNLOAD%"
+mkdir -p %TAR_DOWNLOAD%
+ecp %TARFILES% %TAR_DOWNLOAD%
+%include <tail.h>

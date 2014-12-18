@@ -1,0 +1,5 @@
+%include <head.h>
+%include <myexport.h>
+echo "I am task %TASK% in family %FAMILY% creating a tar file per satellite per day"
+%CALL_MAKETARFILE% -sat %SATELLITE% -sd %START_DATE% -ed %END_DATE%
+%include <tail.h>

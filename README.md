@@ -3,6 +3,14 @@ ECFlow_AvhrrGacL1c_proc
 
 AVHRR GAC L1c processing using ecflow
 
+After you have cloned this repository 
+(local [ecgate] and remote machine [cca]), 
+you have to rename the clone:
+clone == suite name, 
+for example:
+ECFlow_AvhrrGacL1c_proc == proc_avhrrgac_l1c
+
+
 sql/
     sqlite databases must be placed here
 

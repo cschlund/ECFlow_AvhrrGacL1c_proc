@@ -34,7 +34,7 @@ mpmd/
         etc.
 
     start ecflow server
-        ecflow_start -p 3500 -d $PWD/ecflow_logs
+        ecflow_start -p 3500 -d $HOME/ecflow_logs
 
     stop ecflow server, if you do not need it anymore!
         ecflow_stop -p 3500

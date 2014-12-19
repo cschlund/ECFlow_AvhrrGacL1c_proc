@@ -2,24 +2,45 @@
 
 import os, sys
 
-mysuite = "proc_avhrrgac_l1c"
+# -------------------------------------------------------
+# -- modify this ----------------------------------------
+# -------------------------------------------------------
 
-# dearchiving interval: multiple of mpmd_threads_number
-interval_value = 120
-# io offset
-io_offset_value = interval_value - 1
+# user settings
+remote_host_name  = "cca"
+remote_user_name  = "sf7"
+
+# base path, user specific
+basepath = "ms/de/sf7/cschlund"
+
+# subfolder, where your repository is located
+# e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
+type = "proc"
+
+# suite name
+mysuite = "proc_avhrrgac_l1c"
 
 # mpmd_threads_number must be >= $LENGTH defined in config.sh
 mpmd_threads_number = 24
 serial_threads_number = 1
 
+# dearchiving interval: multiple of mpmd_threads_number
+interval_value = 120
+
+# io offset
+io_offset_value = interval_value - 1
+
+
+# -------------------------------------------------------
+# -- modify below if you know what you are doing!
+# -------------------------------------------------------
+
 # -- ecgate and cca
-project_name = mysuite
-perm         = "/perm/ms/de/sf7/cschlund"
-scratch      = "/scratch/ms/de/sf7/cschlund"
-pycmsaf      = os.path.join( perm, "pycmsaf" )
-perm_base    = os.path.join( perm, project_name )
-scratch_base = os.path.join( scratch, project_name )
+repository   = "ECFlow_AvhrrGacL1c_proc"
+perm         = os.path.join( "/perm", basepath )
+scratch      = os.path.join( "/scratch", basepath )
+perm_base    = os.path.join( perm, type, repository )
+scratch_base = os.path.join( scratch, type, repository )
 
 # -- cca:
 cca_tar_download = os.path.join( scratch_base, "ecp_tar_download" )
@@ -30,6 +51,9 @@ cca_add2sqlite   = os.path.join( perm_base, "src", "call_add2sqlite.py" )
 cca_maketarfile  = os.path.join( perm_base, "src", "call_maketarfile.py" )
 cca_storedata    = os.path.join( perm_base, "src", "call_storedata.py")
 
+# -- pycmsaf software
+pycmsaf = "/perm/ms/de/sf7/cschlund/pycmsaf"
+
 # -- paths to be exported: $PATH, $PYTHONPATH
 pycmsaf_bin  = os.path.join( pycmsaf, "bin" )
 python_path  = "/usr/local/apps/python/current/bin/python"
@@ -38,7 +62,7 @@ python_path  = "/usr/local/apps/python/current/bin/python"
 mpmd_mode = "remote"
 mpmd_submit_cmd = "qsub"
 mpmd_submit_script = os.path.join( pycmsaf_bin, "mpmd_submit.py" )
-mpmd_database     = os.path.join( perm_base, "mpmd", "mpmd_proc.sqlite3" )
+mpmd_database     = os.path.join( perm_base, "mpmd", "mpmd_"+type+".sqlite3" )
 ecflow_submit     = os.path.join( pycmsaf_bin, "ecf_submit.py" )
 mpmd_client_prog  = os.path.join( pycmsaf_bin, "mpmd_client.py" )
 gacdb_sqlite_file = os.path.join( pycmsaf, "AVHRR_GAC_archive.sqlite3" )
@@ -47,8 +71,6 @@ ecf_files_dir     = os.path.join( suite_home_dir, "tasks" )
 ecf_include_dir   = os.path.join( suite_home_dir, "include" )
 ecf_home_dir      = os.path.join( scratch_base, "generated" )
 ecf_out_dir       = os.path.join( scratch_base, "log" )
-remote_host_name  = "cca"
-remote_user_name  = "sf7"
 remote_home_dir   = os.path.join( perm_base, "mpmd/generated" )
 remote_log_dir    = os.path.join( scratch_base, "mpmd/log" )
 

@@ -2,14 +2,33 @@
 
 import os, sys
 
+# --------------------------------------------------------------------
+# -- modify here -----------------------------------------------------
+# --------------------------------------------------------------------
+
+# base path, user specific
+basepath = "ms/de/sf7/cschlund"
+
+# subfolder, where your repository is located
+# e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
+type = "proc"
+
+# suite name
+suite = "proc_avhrrgac_l1c"
+
+# --------------------------------------------------------------------
+# -- don't touch -----------------------------------------------------
+# --------------------------------------------------------------------
+
 # -- base directories
-projnam = "proc_avhrrgac_l1c"
-perm    = "/perm/ms/de/sf7/cschlund"
-scratch = "/scratch/ms/de/sf7/cschlund"
-pycmsaf = os.path.join( perm, "pycmsaf" )
-pytcode = os.path.join( perm, "pytAVHRRGACl1c" )
-ecfbase = os.path.join( perm, projnam )
-datadir = os.path.join( scratch, projnam )
+repository = "ECFlow_AvhrrGacL1c_proc"
+perm       = os.path.join( "/perm", basepath )
+scratch    = os.path.join( "/scratch", basepath )
+ecfbase    = os.path.join( perm, type, repository )
+datadir    = os.path.join( scratch, type, repository )
+installdir = "/perm/ms/de/sf7/cschlund"
+pycmsaf    = os.path.join( installdir, "pycmsaf" )
+pytcode    = os.path.join( installdir, "pytAVHRRGACl1c" )
 
 # -- same path as @ecgate: config_suite.py
 relict_dir       = os.path.join( datadir, "not_copied_to_ecfs" )

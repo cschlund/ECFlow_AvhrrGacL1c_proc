@@ -3,16 +3,14 @@ ECFlow_AvhrrGacL1c_proc
 
 AVHRR GAC L1c processing using ecflow
 
-After you have cloned this repository 
-(local [ecgate] and remote machine [cca]), 
-you have to rename the clone:
-clone == suite name, 
-for example:
-ECFlow_AvhrrGacL1c_proc == proc_avhrrgac_l1c
+You have to clone this repository twice:
+1) local machine, e.g. ecgate
+2) remote machine, eg.g cca
 
 
 sql/
     sqlite databases must be placed here
+    required on remote
 
 
 src/
@@ -22,16 +20,15 @@ src/
 
 tle/
     here are the TLE files, which are
-    required in pygac
+    required in pygac (remote machine)
 
 
 mpmd/
     this is the source code for ecflow
+    required on local machine
 
     edit config.sh
-        export ECF_NODE=ecgb11
-        export ECF_PORT=3500
-        etc.
+        adapt all variables and paths!
 
     start ecflow server
         ecflow_start -p 3500 -d $HOME/ecflow_logs
@@ -46,9 +43,9 @@ mpmd/
         cd ecflow_suite
         edit config_suite.py
 
-    clear generated/ and log/ directories - if necessary!
-    on ecgate and cca $SCRATCH !!
-        ./cleanup.sh
+    clear directories if necessary
+        ./cleanup_local.sh
+        ./cleanup_remote.sh
 
     generate suite definition
         ./create_suite.py -h

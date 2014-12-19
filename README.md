@@ -28,8 +28,8 @@ please create your suite using "--testcase"
     sqlite database must be placed here required on remote;
     while processing this database will be filled;
 
-        cp /path/to/pycmsaf/AVHRR_GAC_archive.sqlite3 /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_filled.sqlite3
-    
+        cp /path/to/pycmsaf/AVHRR_GAC_archive.sqlite3 
+        /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_filled.sqlite3
 
     "AVHRR_GAC_archive.sqlite3": 
     original database must be located in your pycmsat install.dir.

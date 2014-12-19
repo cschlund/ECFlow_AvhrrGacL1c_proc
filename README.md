@@ -3,13 +3,23 @@ ECFlow_AvhrrGacL1c_proc
 
 AVHRR GAC L1c processing using ecflow
 
-Dependencies: You need also to install
+# ------------------------------------------------------
+    Dependencies: You need also to install
+# ------------------------------------------------------
+
     https://github.com/Funkensieper/pycmsaf.git
+
     https://github.com/cschlund/pytAVHRRGACl1c.git
 
-You have to clone this repository twice:
-    1) local machine, e.g. ecgate
-    2) remote machine, eg.g cca
+
+# ------------------------------------------------------
+    You have to clone this repository twice:
+# ------------------------------------------------------
+
+    1) local machine, e.g. ecgate: /path/to/repo
+
+    2) remote machine, eg.g cca: /path/to/repo
+
 
 If you want to test or run only specific dates and satellites,
 please create your suite using "--testcase"
@@ -17,15 +27,31 @@ please create your suite using "--testcase"
 
 
 ./sql/
-    sqlite databases must be placed here required on remote
+
+    "AVHRR_GAC_archive_filled.sqlite3": 
+    sqlite database must be placed here required on remote;
+    while processing this database will be filled;
+
+        cp /path/to/pycmsaf/AVHRR_GAC_archive.sqlite3 /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_filled.sqlite3
+    
+
+    "AVHRR_GAC_archive.sqlite3": 
+    original database must be located in your pycmsat install.dir.
+    e.g. "/perm/ms/de/sf7/cschlund/pycmsaf/AVHRR_GAC_archive.sqlite3"
+
 
 ./src/
+
     this is the source code, which is running on the remote machine
 
+
 ./tle/
+
     here are the TLE files, which are required in pygac (remote machine)
 
+
 ./mpmd/
+
     this is the source code for ecflow required on local machine
 
     edit config.sh

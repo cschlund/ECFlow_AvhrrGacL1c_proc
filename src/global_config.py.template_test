@@ -14,7 +14,7 @@ basepath = "ms/de/sf7/cschlund"
 type = "test"
 
 # suite name
-suite = "proc_avhrrgac_l1c"
+suite = "test_avhrrgac_l1c"
 
 # --------------------------------------------------------------------
 # -- don't touch -----------------------------------------------------

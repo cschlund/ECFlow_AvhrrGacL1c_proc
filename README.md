@@ -7,6 +7,9 @@ You have to clone this repository twice:
 1) local machine, e.g. ecgate
 2) remote machine, eg.g cca
 
+If you want to test or run only specific dates and satellites,
+please create your suite using "--testcase"
+For more details: ./create_suite.py --help
 
 sql/
     sqlite databases must be placed here

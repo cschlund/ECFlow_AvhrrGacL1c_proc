@@ -21,7 +21,7 @@ export SUITE=test_avhrrgac_l1c
 
 # MPMD queue length (here the same for each queue)
 # mpmd_threads >= LENGTH
-export LENGTH=4
+export LENGTH=2
 
 # Name of the host finally executing the MPMD tasks
 export REMOTE_HOST=cca

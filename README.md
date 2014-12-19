@@ -3,18 +3,14 @@ ECFlow_AvhrrGacL1c_proc
 
 AVHRR GAC L1c processing using ecflow
 
-# ------------------------------------------------------
-    Dependencies: You need also to install
-# ------------------------------------------------------
+Dependencies: You need also to install
 
     https://github.com/Funkensieper/pycmsaf.git
 
     https://github.com/cschlund/pytAVHRRGACl1c.git
 
 
-# ------------------------------------------------------
-    You have to clone this repository twice:
-# ------------------------------------------------------
+You have to clone this repository twice:
 
     1) local machine, e.g. ecgate: /path/to/repo
 

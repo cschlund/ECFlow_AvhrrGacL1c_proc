@@ -7,7 +7,6 @@
 import os, sys, fnmatch
 import argparse
 import tarfile
-import subprocess
 from datetime import date
 from dateutil.rrule import rrule, DAILY
 from global_config import *

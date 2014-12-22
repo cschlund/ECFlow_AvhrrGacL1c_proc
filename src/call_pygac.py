@@ -92,7 +92,7 @@ for tarfile, l1bfiles in results.iteritems():
                 source,"-C",inp,f1,"--strip=1"], 
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p1.communicate()
-        print stdout
+        #print stdout
         if p1.returncode > 0:
             print stderr
 
@@ -102,7 +102,7 @@ for tarfile, l1bfiles in results.iteritems():
         p2 = subprocess.Popen(["gunzip", f2], 
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p2.communicate()
-        print stdout
+        #print stdout
         if p2.returncode > 0:
             print stderr
 

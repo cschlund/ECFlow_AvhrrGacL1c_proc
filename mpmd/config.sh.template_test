@@ -14,7 +14,7 @@ BASE="ms/de/sf7/cschlund"
 export ECF_NODE=ecgb11
 
 # Port to be used for communication with the ecflow server
-export ECF_PORT=3500
+export ECF_PORT=38515
 
 # Name of the ecflow suite
 export SUITE=test_avhrrgac_l1c

@@ -57,15 +57,15 @@ os.putenv('PYGAC_CONFIG_FILE', cfgfile)
 
 # -- retrieve tar records
 db = AvhrrGacDatabase( dbfile=sql_gacdb_archive )
-results = db.get( start_date=args.start_date, 
-                  end_date=args.end_date, 
-                  sats=[args.satellite],
-                  include_blacklisted=False, nol1b=False)
+tarfiles = db.get_tarfiles( start_date=args.start_date, 
+            end_date=args.end_date, sats=[args.satellite], 
+            include_blacklisted=False)
+l1b_list = db.get_l1bfiles( tarfiles=tarfiles, include_blacklisted=False)
 db.close()
 
 
 # -- loop over results
-for tarfile, l1bfiles in results.iteritems():
+for tarfile, l1bfiles in l1b_list.iteritems():
 
     # -- some settings
     tarbase = os.path.basename(tarfile)

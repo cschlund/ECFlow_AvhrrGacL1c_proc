@@ -157,10 +157,9 @@ delete_dir( inp )
 
 # -- delete l1b main input tarfile
 db = AvhrrGacDatabase( dbfile=sql_gacdb_archive )
-results = db.get( start_date=args.start_date, 
-                  end_date=args.end_date, 
-                  sats=[args.satellite],
-                  include_blacklisted=False, nol1b=True)
+results = db.get_tarfiles( start_date=args.start_date, 
+        end_date=args.end_date, sats=[args.satellite], 
+        include_blacklisted=False)
 db.close()
 
 for res in results:

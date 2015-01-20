@@ -33,16 +33,17 @@ print (" *** Current date               : %s" % cur_date)
 print (" *** Search for files older than: %s" % max_date)
 
 # returns a list of all the files on the current directory
-files = os.listdir( args.inpdir )
+flist = list()
+for root, dirs, files in os.walk( args.inpdir ):
+    for file in files:
+        if file.endswith( args.extension ):
+            flist.append( os.path.join(root, file) )
 
 # list of older files
 olist = list()
 
 # loop over files
-for f in files: 
-
-    # full qualified file
-    ff = os.path.join( args.inpdir, f )
+for ff in flist: 
 
     # actual time stamp of file
     fil_date = datetime.fromtimestamp(os.path.getmtime(ff))
@@ -52,7 +53,7 @@ for f in files:
         olist.append( ff )
         print ("   -> OLD %s: %s" % (ff, fil_date))
 
-        if ff.lower().endswith( args.extension ): 
+        if ff.endswith( args.extension ): 
 
             # get time stamp information
             st = os.stat(ff)
@@ -67,7 +68,7 @@ for f in files:
             new_mtime = cur_unix
 
             # modify the file timestamp 
-            os.utime( ff, ( atime,new_mtime ) )
+            os.utime( ff, ( atime, new_mtime ) )
             new_date = datetime.fromtimestamp(os.path.getmtime(ff))
             print ("   -> NEW %s: %s\n" % (ff, new_date))
 

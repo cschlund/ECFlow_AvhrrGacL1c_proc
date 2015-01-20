@@ -38,6 +38,7 @@ for root, dirs, files in os.walk( args.inpdir ):
     for file in files:
         if file.endswith( args.extension ):
             flist.append( os.path.join(root, file) )
+flist.sort()
 
 # list of older files
 olist = list()
@@ -75,4 +76,4 @@ for ff in flist:
     #else:
     #    print (" * OK %s: %s" % (ff, fil_date))
 
-print ( " *** %s are older than %s " % (len(olist), max_date) )
+print ( " *** %s were older than %s " % (len(olist), max_date) )

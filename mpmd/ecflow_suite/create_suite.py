@@ -428,11 +428,13 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    print ("\n * Script     : %s" % sys.argv[0])
-    print (" * start date : %s" % args.sdate)
-    print (" * end date   : %s\n" % args.edate)
-    print (" * test mode  : %s\n" % args.userdatelimit)
-    print (" * Creating suite definition %s\n" % mysuite)
+    print "\n"
+    print (" * Script         : %s" % sys.argv[0])
+    print (" * start date     : %s" % args.sdate)
+    print (" * end date       : %s" % args.edate)
+    print (" * user date limit: %s" % args.userdatelimit)
+    print (" * Creating suite definition %s" % mysuite)
+    print "\n"
 
     build_suite()
 

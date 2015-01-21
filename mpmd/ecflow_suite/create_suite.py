@@ -372,6 +372,9 @@ def build_suite():
             ' '.join(tarfiles_within_current_interval))
 
 
+    # close database connection
+    db.close()
+
 
     # ============================
     # CREATE SUITE DEFINITION FILE

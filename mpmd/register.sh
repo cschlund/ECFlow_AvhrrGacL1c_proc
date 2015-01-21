@@ -18,7 +18,7 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=pygac \
                --length=$LENGTH --memory=1024 \
                --threads_per_task=1 \
-               --walltime=24:00:00 --suite=$SUITE \
+               --walltime=03:00:00 --suite=$SUITE \
                --pbs_queue=np
 
 # register pystat queue

@@ -266,7 +266,7 @@ def build_suite():
         # -- loop over years for satellite -----------------------------------
         for year in years: 
 
-            if args.testcase:
+            if args.userdatelimit:
 
                 if year >= args.sdate.year and year <= args.edate.year:
                     # create family year for satellite
@@ -421,15 +421,17 @@ if __name__ == '__main__':
     parser.add_argument('--satellite', type=str,
             help='''satellite name, e.g. noaa15, metopa, 
             terra, aqua''')
-    parser.add_argument('--testcase', help='''Run only a few
-            data.''', action="store_true")
+    parser.add_argument('--userdatelimit', help='''Take args.sdate
+            and args.edate instead of start- and enddate of each
+            satellite (i.e. database date limits).''', 
+            action="store_true")
     
     args = parser.parse_args()
     
     print ("\n * Script     : %s" % sys.argv[0])
     print (" * start date : %s" % args.sdate)
     print (" * end date   : %s\n" % args.edate)
-    print (" * test mode  : %s\n" % args.testcase)
+    print (" * test mode  : %s\n" % args.userdatelimit)
     print (" * Creating suite definition %s\n" % mysuite)
 
     build_suite()

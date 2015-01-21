@@ -15,6 +15,10 @@ from pycmsaf.ssh_client import SSHClient
 
 
 # ----------------------------------------------------------------
+def str2upper(string_object):
+    return string_object.upper()
+
+# ----------------------------------------------------------------
 def set_vars(suite):
     """
     Set suite level variables
@@ -243,12 +247,21 @@ def build_suite():
 
     # connect to database and get_sats list
     db = AvhrrGacDatabase( dbfile=gacdb_sqlite_file )
+
+    # ignored satellites
+    default_ignore_sats = ['NOAA6', 'NOAA8', 'NOAA10']
+    if args.ignoresats:
+        add_ignore_sats = args.ignoresats 
+        ignore_list = default_ignore_sats + add_ignore_sats
+    else:
+        ignore_list = default_ignore_sats
+
+
     if args.satellite:
         satellites = [args.satellite.upper()]
     else:
-        satellites = db.get_sats( start_date=args.sdate, 
-                                  end_date=args.edate,
-                                  ignore_sats=['NOAA6', 'NOAA8', 'NOAA10'])
+        satellites = db.get_sats( start_date=args.sdate, end_date=args.edate,
+                                  ignore_sats=ignore_list )
 
     # -- loop over satellites ------------------------------------------------
     for sat in satellites:
@@ -421,6 +434,9 @@ if __name__ == '__main__':
     parser.add_argument('--satellite', type=str,
             help='''satellite name, e.g. noaa15, metopa, 
             terra, aqua''')
+    parser.add_argument('--ignoresats', type=str2upper, 
+            nargs='*', help='''List of satellites 
+            which should be ignored.''')
     parser.add_argument('--userdatelimit', help='''Take args.sdate
             and args.edate instead of start- and enddate of each
             satellite (i.e. database date limits).''', 
@@ -433,6 +449,7 @@ if __name__ == '__main__':
     print (" * start date     : %s" % args.sdate)
     print (" * end date       : %s" % args.edate)
     print (" * user date limit: %s" % args.userdatelimit)
+    print (" * ignore sats    : %s" % args.ignoresats)
     print (" * Creating suite definition %s" % mysuite)
     print "\n"
 

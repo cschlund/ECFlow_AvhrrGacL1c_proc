@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import os, sys
+import os
+import sys
 import time
 import argparse
 from datetime import datetime, timedelta
@@ -63,7 +64,7 @@ for ff in flist:
 
             # actual unixtime
             cur_unix = time.mktime( cur_date.timetuple() )
-            #cur_pyth = datetime.fromtimestamp( int( cur_unix ) )
+            # cur_pyth = datetime.fromtimestamp( int( cur_unix ) )
 
             # new modification time
             new_mtime = cur_unix

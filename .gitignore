@@ -1,4 +1,5 @@
 *.idea
 global_config.py
+config_suite.py
 *.sqlite3
 *.pyc

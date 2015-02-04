@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-import os, sys
+import os
 
 # --------------------------------------------------------------------
 # -- modify here -----------------------------------------------------
@@ -11,7 +11,7 @@ basepath = "ms/de/sf7/cschlund"
 
 # subfolder, where your repository is located
 # e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
-type = "proc"
+itype = "proc"
 
 # suite name
 suite = "proc_avhrrgac_l1c"
@@ -22,52 +22,52 @@ suite = "proc_avhrrgac_l1c"
 
 # -- base directories
 repository = "ECFlow_AvhrrGacL1c_proc"
-perm       = os.path.join( "/perm", basepath )
-scratch    = os.path.join( "/scratch", basepath )
-ecfbase    = os.path.join( perm, type, repository )
-datadir    = os.path.join( scratch, type, repository )
+perm = os.path.join("/perm", basepath)
+scratch = os.path.join("/scratch", basepath)
+ecfbase = os.path.join(perm, itype, repository)
+datadir = os.path.join(scratch, itype, repository)
 installdir = "/perm/ms/de/sf7/cschlund"
-pycmsaf    = os.path.join( installdir, "pycmsaf" )
-pytcode    = os.path.join( installdir, "pytAVHRRGACl1c" )
+pycmsaf = os.path.join(installdir, "pycmsaf")
+pytcode = os.path.join(installdir, "pytAVHRRGACl1c")
 
 # -- same path as @ecgate: config_suite.py
-relict_dir       = os.path.join( datadir, "not_copied_to_ecfs" )
-ecp_tar_download = os.path.join( datadir, "ecp_tar_download" )
-ecp_tar_upload   = os.path.join( datadir, "ecp_tar_upload" )
-tar_file_prefix  = "AVHRR_GAC_L1C_"
-tar_file_suffix  = ".tar.bz2"
-tar_file_suffix2 = ".tar" # monthly tar files (incl. .tar.bz2 files)
+relict_dir = os.path.join(datadir, "not_copied_to_ecfs")
+ecp_tar_download = os.path.join(datadir, "ecp_tar_download")
+ecp_tar_upload = os.path.join(datadir, "ecp_tar_upload")
+tar_file_prefix = "AVHRR_GAC_L1C_"
+tar_file_suffix = ".tar.bz2"
+tar_file_suffix2 = ".tar"  # monthly tar files (incl. .tar.bz2 files)
 
 # -- paths to be exported: $PATH, $PYTHONPATH
-pycmsaf_bin      = os.path.join( pycmsaf, "bin" )
-python_path      = "/usr/local/apps/python/current/bin/python"
+pycmsaf_bin = os.path.join(pycmsaf, "bin")
+python_path = "/usr/local/apps/python/current/bin/python"
 pygac_pythonpath = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages"
-pygac_path       = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages"\
-                   "/pygac-v0.1.0-py2.7.egg/pygac"
+pygac_path = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages" \
+             "/pygac-v0.1.0-py2.7.egg/pygac"
 
 # -- $PERM
-source_dir = os.path.join( ecfbase, "src" )
-sqlite_dir = os.path.join( ecfbase, "sql" )
+source_dir = os.path.join(ecfbase, "src")
+sqlite_dir = os.path.join(ecfbase, "sql")
 
 # -- sqlite databases
-sql_gacdb_archive = os.path.join( sqlite_dir, "AVHRR_GAC_archive_filled.sqlite3" )
-sql_pystat_output = os.path.join( sqlite_dir, "AVHRR_GAC_L1c_pystat.sqlite3" )
+sql_gacdb_archive = os.path.join(sqlite_dir, "AVHRR_GAC_archive_filled.sqlite3")
+sql_pystat_output = os.path.join(sqlite_dir, "AVHRR_GAC_L1c_pystat.sqlite3")
 
 # -- pygac stuff
-pygac_tle_dir = os.path.join( ecfbase, "tle" )
+pygac_tle_dir = os.path.join(ecfbase, "tle")
 pygac_tle_txt = "TLE_%(satname)s.txt"
-pygac_prefix  = "ECC_GAC"
+pygac_prefix = "ECC_GAC"
 pygac_version = "v0.1.0"
-pygac_runtool = os.path.join( pygac_path, "gac_run.py" )
+pygac_runtool = os.path.join(pygac_path, "gac_run.py")
 
 # -- pystat executable
-pystat_runtool = os.path.join( pytcode, "run_pystat_add2sqlite.py" )
+pystat_runtool = os.path.join(pytcode, "run_pystat_add2sqlite.py")
 
 # -- add2sqlite executable
-add2sql_runtool = os.path.join( pytcode, "add2sqlite_l1c_info.py" )
+add2sql_runtool = os.path.join(pytcode, "add2sqlite_l1c_info.py")
 
 # -- ecfs directories
 ecfs_l1b_dir = "ec:/sf3/data/GAC_avhrr_archive"
 ecfs_l1c_dir = "ec:/sf7/data/AVHRR_GAC_L1c_archive"
-#ecfs_l1c_dir = "ec:/sf7/data/AVHRR_GAC_L1c_archive/pyGAC"+pygac_version
+# ecfs_l1c_dir = "ec:/sf7/data/AVHRR_GAC_L1c_archive/pyGAC"+pygac_version
 

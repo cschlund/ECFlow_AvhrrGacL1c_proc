@@ -1,9 +1,10 @@
 #!/usr/bin/env python2.7
 from pycmsaf.logger import setup_root_logger
+
 logger = setup_root_logger(name='root')
 
-import os, sys
-import subprocess
+import sys
+# noinspection PyUnresolvedReferences
 import ecflow
 import argparse
 import datetime
@@ -14,29 +15,29 @@ from pycmsaf.utilities import date_from_year_doy
 from pycmsaf.ssh_client import SSHClient
 
 
-# ----------------------------------------------------------------
 def str2upper(string_object):
     return string_object.upper()
 
-# ----------------------------------------------------------------
+
 def set_vars(suite):
     """
     Set suite level variables
     """
-    #suite.add_variable('TURTLES', 'I like turtles')
+    # suite.add_variable('TURTLES', 'I like turtles')
     suite.add_variable("ECF_MICRO", "%")
 
     # Location of the MPMD client:
-    suite.add_variable("MPMD_CLIENT", mpmd_client_prog )
-    
+    suite.add_variable("MPMD_CLIENT", mpmd_client_prog)
+
     # Specify the python interpreter to be used:
-    suite.add_variable("PYTHON", \
-            "PYTHONPATH=$PYTHONPATH:"+perm+" "+python_path)
-    
+    suite.add_variable("PYTHON",
+                       "PYTHONPATH=$PYTHONPATH:" +
+                       perm + " " + python_path)
+
     # Directory on the remote machine, where all generated 
     # files from "ECF_HOME" will be copied before execution
     suite.add_variable("REMOTE_HOME", remote_home_dir)
-    
+
     # Directory on the remote machine, 
     # where all jobs write their output
     suite.add_variable("REMOTE_LOGDIR", remote_log_dir)
@@ -44,20 +45,20 @@ def set_vars(suite):
     # Remote user and host names
     suite.add_variable("REMOTE_USER", remote_user_name)
     suite.add_variable("REMOTE_HOST", remote_host_name)
-    
+
     # Network settings for communication with MPMD database:
     suite.add_variable("MPMD_DATABASE", mpmd_database)
     suite.add_variable("MPMD_SUBMIT_SCRIPT", mpmd_submit_script)
     suite.add_variable("MPMD_MODE", mpmd_mode)
     suite.add_variable("MPMD_SUBMIT_CMD", mpmd_submit_cmd)
-    
+
     # Standard ecflow variables:
     suite.add_variable("SUITE_HOME", suite_home_dir)
     suite.add_variable("ECF_HOME", ecf_home_dir)
     suite.add_variable("ECF_FILES", ecf_files_dir)
     suite.add_variable("ECF_INCLUDE", ecf_include_dir)
     suite.add_variable("ECF_OUT", ecf_out_dir)
-    
+
     # Miscellaneous:
     suite.add_variable("ECF_TRIES", '1')
     suite.add_variable("ECF_SUBMIT", ecflow_submit)
@@ -65,12 +66,10 @@ def set_vars(suite):
     suite.add_variable("TAR_UPLOAD", cca_tar_upload)
     suite.add_variable("CALL_PYGAC", cca_pygac)
     suite.add_variable("CALL_PYSTAT", cca_pystat)
-    suite.add_variable("CALL_ADD2SQLITE", cca_add2sqlite)
     suite.add_variable("CALL_MAKETARFILE", cca_maketarfile)
     suite.add_variable("CALL_STOREDATA", cca_storedata)
 
 
-# ----------------------------------------------------------------
 def add_trigger(node, trigger):
     """
     Make a given node wait for the trigger node to complete.
@@ -81,12 +80,10 @@ def add_trigger(node, trigger):
     @type trigger: ecflow.[family/task]
     @return: None
     """
-
     node.add_trigger('{0} == complete'.
-            format(trigger.get_abs_node_path()))
+                     format(trigger.get_abs_node_path()))
 
 
-# ----------------------------------------------------------------
 def add_mpmd_task(family, taskname):
     task = family.add_task(taskname)
     for event in ('mpmd_queued', 'mpmd_submitted', 'mpmd_error'):
@@ -94,35 +91,27 @@ def add_mpmd_task(family, taskname):
     return task
 
 
-# ----------------------------------------------------------------
-def add_family_variables(family, first_day, last_day): 
+def add_family_variables(family, first_day, last_day):
     family.add_variable("START_DATE", first_day)
     family.add_variable("END_DATE", last_day)
 
 
-# ----------------------------------------------------------------
 def add_mpmd_tasks(family):
-    pygac       = add_mpmd_task(family, 'pygac')
-    pystat      = add_mpmd_task(family, 'pystat')
-    add2sqlite  = add_mpmd_task(family, 'add2sqlite')
+    pygac = add_mpmd_task(family, 'pygac')
+    pystat = add_mpmd_task(family, 'pystat')
     maketarfile = add_mpmd_task(family, 'maketarfile')
 
     add_trigger(pystat, pygac)
-    add_trigger(add2sqlite, pystat)
-    add_trigger(maketarfile, add2sqlite)
+    add_trigger(maketarfile, pystat)
 
     return dict(pygac=pygac, pystat=pystat,
-                add2sqlite=add2sqlite, maketarfile=maketarfile)
+                maketarfile=maketarfile)
 
 
-# ----------------------------------------------------------------
 def add_dearchiving_tasks(family):
     family.add_task('getdata')
-    #family.add_task('ecfs')
-    #family.add_task('mars')
 
 
-# ----------------------------------------------------------------
 def familytree(node, tree=None):
     """
     Given an ecflow node, walk the tree in downward direction 
@@ -143,9 +132,9 @@ def familytree(node, tree=None):
         # Save node to the tree if its type is ecflow.Family
         if isinstance(subnode, ecflow.Family):
             abspath = subnode.get_abs_node_path()
-            tree.append(abspath[1:])    # skip initial '/' because otherwise
-                                        # os.path.join() doesn't join paths
-                                        # correctly.
+            tree.append(abspath[1:])  # skip initial '/' because otherwise
+            # os.path.join() doesn't join paths
+            # correctly.
 
             # Call function recursively.
             familytree(subnode, tree)
@@ -153,25 +142,22 @@ def familytree(node, tree=None):
     return tree
 
 
-# ----------------------------------------------------------------
 def build_suite():
     """
     Build the ecflow suite.
     """
-
     logger.info('Building suite.')
-
 
     # ========================
     # GENERAL SUITE PROPERTIES
     # ========================
 
-    defs  = ecflow.Defs()
-    suite = defs.add_suite( mysuite )
+    defs = ecflow.Defs()
+    suite = defs.add_suite(mysuite)
 
     # Set suite level variables
     set_vars(suite)
-    
+
     # Set default status
     suite.add_defstatus(ecflow.DState.suspended)
 
@@ -179,39 +165,37 @@ def build_suite():
     suite.add_limit("mpmd_threads", mpmd_threads_number)
     suite.add_limit("serial_threads", serial_threads_number)
 
-
     # ========================
     # ADD CRON JOB
     # ========================
 
-    start  = ecflow.TimeSlot(0,0)
-    finish = ecflow.TimeSlot(23,59)
-    incr   = ecflow.TimeSlot(0,1)
-    time_series = ecflow.TimeSeries( start, finish, incr, False)
+    start = ecflow.TimeSlot(0, 0)
+    finish = ecflow.TimeSlot(23, 59)
+    incr = ecflow.TimeSlot(0, 1)
+    time_series = ecflow.TimeSeries(start, finish, incr, False)
     cron = ecflow.Cron()
-    cron.set_time_series( time_series )
+    cron.set_time_series(time_series)
     fam_submit = suite.add_family('queue_submitter')
     submit = fam_submit.add_task('submit')
-    submit.add_cron( cron )
+    submit.add_cron(cron)
     fam_submit.add_variable('ECF_JOB_CMD', ecgate_job_cmd)
-
 
     # ========================
     # DEFINE TOPLEVEL FAMILIES
     # ========================
 
-    fam_proc   = suite.add_family('proc')
+    fam_proc = suite.add_family('proc')
     fam_dearch = suite.add_family('dearchiving')
 
-    start  = ecflow.TimeSlot(0,0)
-    finish = ecflow.TimeSlot(23,55)
-    incr   = ecflow.TimeSlot(0,5)
-    time_series = ecflow.TimeSeries( start, finish, incr, False)
+    start = ecflow.TimeSlot(0, 0)
+    finish = ecflow.TimeSlot(23, 55)
+    incr = ecflow.TimeSlot(0, 5)
+    time_series = ecflow.TimeSeries(start, finish, incr, False)
     cron = ecflow.Cron()
-    cron.set_time_series( time_series )
-    fam_arch  = suite.add_family('archiving')
+    cron.set_time_series(time_series)
+    fam_arch = suite.add_family('archiving')
     storedata = fam_arch.add_task('storedata')
-    storedata.add_cron( cron )
+    storedata.add_cron(cron)
     fam_arch.add_variable('ECF_JOB_CMD', serial_job_cmd)
 
     # Activate thread limits
@@ -222,22 +206,20 @@ def build_suite():
     fam_proc.add_variable('ECF_JOB_CMD', mpmd_job_cmd)
     fam_dearch.add_variable('ECF_JOB_CMD', serial_job_cmd)
 
-
     # ===============================
     # DEFINE DYNAMIC FAMILIES & TASKS
     # ===============================
 
-    dearch_interval  = interval_value
+    dearch_interval = interval_value
     io_hiding_offset = io_offset_value
-    dearch_counter   = 0
-    tar_counter      = 0
+    dearch_counter = 0
+    tar_counter = 0
 
-    fam_tar   = None
+    fam_tar = None
     fam_chunk = None
 
     mpmd_families = list()
     tarfiles_within_current_interval = list()
-
 
     # Make sure dearchiving interval is at least one 
     # greater than IO hiding offset.
@@ -246,44 +228,43 @@ def build_suite():
                          'than IO hiding offset.')
 
     # connect to database and get_sats list
-    db = AvhrrGacDatabase( dbfile=gacdb_sqlite_file )
+    db = AvhrrGacDatabase(dbfile=gacdb_sqlite_file)
 
     # ignored satellites
     default_ignore_sats = ['NOAA6', 'NOAA8', 'NOAA10']
     if args.ignoresats:
-        add_ignore_sats = args.ignoresats 
+        add_ignore_sats = args.ignoresats
         ignore_list = default_ignore_sats + add_ignore_sats
     else:
         ignore_list = default_ignore_sats
 
-
     if args.satellite:
         satellites = [args.satellite.upper()]
     else:
-        satellites = db.get_sats( start_date=args.sdate, end_date=args.edate,
-                                  ignore_sats=ignore_list )
+        satellites = db.get_sats(start_date=args.sdate,
+                                 end_date=args.edate,
+                                 ignore_sats=ignore_list)
 
-    # -- loop over satellites ------------------------------------------------
+    # -- loop over satellites
     for sat in satellites:
-    
+
         # create sat family
-        fam_sat = fam_proc.add_family( sat )
+        fam_sat = fam_proc.add_family(sat)
 
         # add satellite variable
         fam_sat.add_variable("SATELLITE", sat)
-    
+
         # get years list
         years = db.get_years(sat)
 
-    
-        # -- loop over years for satellite -----------------------------------
-        for year in years: 
+        # -- loop over years for satellite
+        for year in years:
 
             if args.userdatelimit:
 
-                if year >= args.sdate.year and year <= args.edate.year:
+                if args.sdate.year <= year <= args.edate.year:
                     # create family year for satellite
-                    fam_year = fam_sat.add_family( str(year) )
+                    fam_year = fam_sat.add_family(str(year))
 
                     # start and end date for year & satellite
                     sd = args.sdate
@@ -294,39 +275,37 @@ def build_suite():
             else:
 
                 # create family year for satellite
-                fam_year = fam_sat.add_family( str(year) )
+                fam_year = fam_sat.add_family(str(year))
 
                 # start and end date for year & satellite
                 sd = datetime.date(year, 1, 1)
                 ed = datetime.date(year, 12, 31)
 
-
             # get tarfile list
-            tarfiles = db.get_tarfiles( start_date=sd, end_date=ed, 
-                    sats=[sat], include_blacklisted=False )
-    
-    
-            # -- loop over tarfiles for year & satellite ---------------------
+            tarfiles = db.get_tarfiles(start_date=sd, end_date=ed,
+                                       sats=[sat], include_blacklisted=False)
+
+            # -- loop over tarfiles for year & satellite
             for tarfil in tarfiles:
 
                 # split tarfilename
-                tarbase  = os.path.basename(tarfil)
-                tardoys  = ((tarbase.split("."))[0].split("_"))[2].split("x")
-                taryear  = (tarbase.split("."))[0].split("_")[1]
-                tarsdate = date_from_year_doy( int(taryear), int(tardoys[0]) )
-                taredate = date_from_year_doy( int(taryear), int(tardoys[1]) )
+                tarbase = os.path.basename(tarfil)
+                tardoys = ((tarbase.split("."))[0].split("_"))[2].split("x")
+                taryear = (tarbase.split("."))[0].split("_")[1]
+                tarsdate = date_from_year_doy(int(taryear), int(tardoys[0]))
+                taredate = date_from_year_doy(int(taryear), int(tardoys[1]))
 
                 first_tar_date = tarsdate
                 last_tar_date = taredate
 
-                date_str = first_tar_date.strftime("%Y%m%d")+\
-                           '_'+last_tar_date.strftime("%Y%m%d")
+                date_str = first_tar_date.strftime("%Y%m%d") + \
+                           '_' + last_tar_date.strftime("%Y%m%d")
 
                 if tar_counter % dearch_interval == 0:
                     if fam_chunk:
                         # Add all collected tarfiles to the current dearchiving family
-                        fam_chunk.add_variable('TARFILES', 
-                                ' '.join(tarfiles_within_current_interval))
+                        fam_chunk.add_variable('TARFILES',
+                                               ' '.join(tarfiles_within_current_interval))
 
                         # Reset list of tarfiles within current interval
                         tarfiles_within_current_interval = []
@@ -340,8 +319,8 @@ def build_suite():
                     # Make it wait for the current MPMD family minus a possible
                     # offset in order to hide IO time behind computation time.
                     if fam_tar:
-                        add_trigger(fam_chunk, 
-                                mpmd_families[tar_counter - io_hiding_offset - 1])
+                        add_trigger(fam_chunk,
+                                    mpmd_families[tar_counter - io_hiding_offset - 1])
                     else:
                         # There is no trigger for the first IO chunk.
                         pass
@@ -351,9 +330,9 @@ def build_suite():
                 tar_counter += 1
 
                 # add start and end day of fam_tar
-                add_family_variables(fam_tar, 
-                        first_tar_date.strftime("%Y%m%d"),
-                        last_tar_date.strftime("%Y%m%d"))
+                add_family_variables(fam_tar,
+                                     first_tar_date.strftime("%Y%m%d"),
+                                     last_tar_date.strftime("%Y%m%d"))
 
                 # Make it wait for the current dearchiving family.
                 add_trigger(fam_tar, fam_chunk)
@@ -365,16 +344,14 @@ def build_suite():
                 mpmd_families.append(fam_tar)
                 tarfiles_within_current_interval.append(tarfil)
 
-    # -- end of loop over satellites -----------------------------------------
+    # -- end of loop over satellites
 
     # Add last chunk of collected tarfiles to the last dearchiving family
-    fam_chunk.add_variable('TARFILES', 
-            ' '.join(tarfiles_within_current_interval))
-
+    fam_chunk.add_variable('TARFILES',
+                           ' '.join(tarfiles_within_current_interval))
 
     # close database connection
     db.close()
-
 
     # ============================
     # CREATE SUITE DEFINITION FILE
@@ -385,10 +362,8 @@ def build_suite():
 
     # Save suite to file
     suite_def_file = mysuite + '.def'
-    logger.info('Saving suite definition to file: {0}'.format(
-                suite_def_file))
+    logger.info('Saving suite definition to file: {0}'.format(suite_def_file))
     defs.save_as_defs(suite_def_file)
-
 
     # ======================
     # CREATE LOG DIRECTORIES
@@ -412,41 +387,37 @@ def build_suite():
     ssh = SSHClient(user=remote_user_name, host=remote_host_name)
     for node in tree:
         remote_dir = os.path.join(remote_log_dir, node)
-        ssh.mkdir(remote_dir, batch=True)   # batch=True appends this mkdir
-                                            # call to the command batch.
+        ssh.mkdir(remote_dir, batch=True)  # batch=True appends this mkdir
+        # call to the command batch.
 
     # Create all remote directories in one step (is much faster)
     ssh.execute_batch()
 
-# ----------------------------------------------------------------
-
-# end of defs
-# start of main code
-
-# ================================================================
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description=sys.argv[0] + " creates the suite " + mysuite + " required by ecflow.")
 
-    parser = argparse.ArgumentParser(description=sys.argv[0]+'''
-    creates the suite '''+mysuite+''' required by ecflow.''')
-    
-    parser.add_argument('--sdate', type=str2date, \
-            help='start date, e.g. 20090101', required=True)
-    parser.add_argument('--edate', type=str2date, \
-            help='end date, e.g. 20091231',required=True)
+    parser.add_argument('--sdate', type=str2date, required=True,
+                        help='start date, e.g. 20090101')
+
+    parser.add_argument('--edate', type=str2date, required=True,
+                        help='end date, e.g. 20091231')
+
     parser.add_argument('--satellite', type=str,
-            help='''satellite name, e.g. noaa15, metopa, 
-            terra, aqua''')
-    parser.add_argument('--ignoresats', type=str2upper, 
-            nargs='*', help='''List of satellites 
-            which should be ignored.''')
-    parser.add_argument('--userdatelimit', help='''Take args.sdate
-            and args.edate instead of start- and enddate of each
-            satellite (i.e. database date limits).''', 
-            action="store_true")
-    
+                        help="satellite name, e.g. "
+                             "noaa15, metopa, terra, aqua")
+
+    parser.add_argument('--ignoresats', type=str2upper, nargs='*',
+                        help="List of satellites which should be ignored.")
+
+    parser.add_argument('--userdatelimit', action="store_true",
+                        help="Take args.sdate and args.edate instead of "
+                             "start- and enddate of each satellite "
+                             "(i.e. database date limits).")
+
     args = parser.parse_args()
-    
+
     print "\n"
     print (" * Script         : %s" % sys.argv[0])
     print (" * start date     : %s" % args.sdate)
@@ -457,5 +428,3 @@ if __name__ == '__main__':
     print "\n"
 
     build_suite()
-
-# ================================================================

@@ -238,8 +238,8 @@ def build_suite():
     else:
         ignore_list = default_ignore_sats
 
-    if args.satellite:
-        satellites = [args.satellite.upper()]
+    if args.satellites:
+        satellites = args.satellites
     else:
         satellites = db.get_sats(start_date=args.sdate,
                                  end_date=args.edate,
@@ -404,9 +404,8 @@ if __name__ == '__main__':
     parser.add_argument('--edate', type=str2date, required=True,
                         help='end date, e.g. 20091231')
 
-    parser.add_argument('--satellite', type=str,
-                        help="satellite name, e.g. "
-                             "noaa15, metopa, terra, aqua")
+    parser.add_argument('--satellites', type=str2upper, nargs='*',
+                        help="List of satellites, which should be processed.")
 
     parser.add_argument('--ignoresats', type=str2upper, nargs='*',
                         help="List of satellites which should be ignored.")
@@ -422,6 +421,7 @@ if __name__ == '__main__':
     print (" * Script         : %s" % sys.argv[0])
     print (" * start date     : %s" % args.sdate)
     print (" * end date       : %s" % args.edate)
+    print (" * satellites     : %s" % args.satellites)
     print (" * user date limit: %s" % args.userdatelimit)
     print (" * ignore sats    : %s" % args.ignoresats)
     print (" * Creating suite definition %s" % mysuite)

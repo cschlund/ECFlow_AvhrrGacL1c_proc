@@ -70,7 +70,7 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
 
     stdout, stderr = proc.communicate()
     print stdout
-    print stdout
+    print stderr
 
 print u" * {0} finished ! ".format(os.path.basename(__file__))
 print u" * Statistics added to {0}".format(sql_pystat_output)

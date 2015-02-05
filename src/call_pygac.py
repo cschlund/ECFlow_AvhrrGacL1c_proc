@@ -97,25 +97,25 @@ for tarfile in tarfiles:
         print "   Working on {0}.L1b -> {1}".format(i, l1bfiles[i])
         l1cfile = None
 
-        # print "   + get L1b from tarfile"
-        #
-        # f1 = tarplat + "_" + taryear + "/" + l1bfiles[i]
-        # c1 = ["tar", "xf", source, "-C", inp, f1, "--strip=1"]
-        # p1 = subprocess.Popen(c1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #
-        # stdout, stderr = p1.communicate()
-        # print stdout
-        # print stderr
-        #
-        # print "   + gunzip L1bfile"
-        #
-        # f2 = os.path.join(inp, l1bfiles[i])
-        # c2 = ["gunzip", f2]
-        # p2 = subprocess.Popen(c2, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #
-        # stdout, stderr = p2.communicate()
-        # print stdout
-        # print stderr
+        print "   + get L1b from tarfile"
+
+        f1 = tarplat + "_" + taryear + "/" + l1bfiles[i]
+        c1 = ["tar", "xf", source, "-C", inp, f1, "--strip=1"]
+        p1 = subprocess.Popen(c1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        stdout, stderr = p1.communicate()
+        print stdout
+        print stderr
+
+        print "   + gunzip L1bfile"
+
+        f2 = os.path.join(inp, l1bfiles[i])
+        c2 = ["gunzip", f2]
+        p2 = subprocess.Popen(c2, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        stdout, stderr = p2.communicate()
+        print stdout
+        print stderr
 
         print "   + call {0}".format(os.path.basename(pygac_runtool))
 

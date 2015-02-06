@@ -44,9 +44,11 @@ print (" * {0} started for {1} : {2} - {3}! ".format(
     os.path.basename(__file__), args.satellite, args.start_date, args.end_date))
 
 
-# -- define input
+# -- define l1c input
 inp = os.path.join(datadir, "output/pygac", args.satellite, date_range)
 
+# -- define l1b input
+l1b_input = os.path.join(datadir, "input", args.satellite, date_range)
 
 # -- define temp. subfolder for tar creation
 # cron job will upload tarfiles!
@@ -152,11 +154,11 @@ move_files(tar_files_list, ecp_tar_upload)
 delete_dir(make_tar_tmp_dir)
 
 
-# -- delete pygac results
+# -- delete pygac results, i.e. l1c input
 delete_dir(inp)
 
 
-# -- delete l1b main input tarfile
+# -- delete l1b main input tarfile in ecp_tar_download
 db = AvhrrGacDatabase(dbfile=sql_gacdb_archive)
 results = db.get_tarfiles(start_date=args.start_date, end_date=args.end_date,
                           sats=[args.satellite], include_blacklisted=False)
@@ -165,19 +167,25 @@ db.close()
 for res in results:
     base = os.path.basename(res)
     res_file = os.path.join(ecp_tar_download, base)
-
-    # only delete l1b tarfile if start and end dates are matching
     tardoys = ((base.split("."))[0].split("_"))[2].split("x")
     taryear = (base.split("."))[0].split("_")[1]
     tarsdate = date_from_year_doy(int(taryear), int(tardoys[0]))
     taredate = date_from_year_doy(int(taryear), int(tardoys[1]))
 
-    if args.start_date == tarsdate and args.end_date == taredate:
-        print " * delete {0} ".format(res_file)
-        delete_file(res_file)
+    # if no corresponding l1b input files are under "input" and
+    # if start and end dates are matching, then clean up completely
+    if not os.path.exists(l1b_input):
+        if args.start_date == tarsdate and args.end_date == taredate:
+            print " * delete {0} ".format(res_file)
+            delete_file(res_file)
+        else:
+            print " * cannot delete {0} due to date mismatch".format(res_file)
+    # do not remove l1b tarfile in ecp_tar_download
+    # but remove l1b files in "input"
     else:
-        print " * cannot delete {0} due to date mismatch".format(res_file)
+        print " * cannot delete {0} due to errors in call_pygac.py".format(res_file)
+        print " * but delete {0} ".format(l1b_input)
+        delete_dir(l1b_input)
 
 
 print " * {0} finished !".format(os.path.basename(__file__))
-

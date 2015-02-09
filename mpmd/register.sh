@@ -18,7 +18,7 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=pygac \
                --length=$LENGTH --memory=1024 \
                --threads_per_task=1 \
-               --walltime=03:00:00 --suite=$SUITE \
+               --walltime=24:00:00 --suite=$SUITE \
                --pbs_queue=np
 
 # register pystat queue
@@ -27,14 +27,6 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                --length=$LENGTH --memory=3000 \
                --threads_per_task=12 \
                --walltime=24:00:00 --suite=$SUITE \
-               --pbs_queue=np
-
-# register add2sqlite queue
-mpmd_client.py --dbfile=$MPMD_DATABASE \
-               register_queue --name=add2sqlite \
-               --length=$LENGTH --memory=1024 \
-               --threads_per_task=1 \
-               --walltime=12:00:00 --suite=$SUITE \
                --pbs_queue=np
 
 # register archiving queue (uses ECFS)

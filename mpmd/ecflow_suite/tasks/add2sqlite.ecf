@@ -1,5 +1,0 @@
-%include <head.h>
-%include <myexport.h>
-echo "I am task %TASK% in family %FAMILY% responsible for adding L1c info 2 sqlite db"
-%CALL_ADD2SQLITE% -sat %SATELLITE% -sd %START_DATE% -ed %END_DATE%
-%include <tail.h>

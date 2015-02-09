@@ -75,4 +75,4 @@ for ff in flist:
             # else:
             #    print (" * OK %s: %s" % (ff, fil_date))
 
-print " *** {0:s} were older than {1:s} ".format(len(olist), max_date)
+print " *** {0} were older than {1} ".format(len(olist), max_date)

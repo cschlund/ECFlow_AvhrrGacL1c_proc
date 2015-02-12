@@ -62,7 +62,7 @@ out = create_dir("output/pygac", args.satellite,
 # -- create pygac config file
 cfgfile = os.path.join(out, "pygac_" + args.satellite +
                        "_" + date_range + ".cfg")
-def_pygac_cfg(cfgfile, out, logger)
+def_pygac_cfg(cfgfile, out)
 os.putenv('PYGAC_CONFIG_FILE', cfgfile)
 
 

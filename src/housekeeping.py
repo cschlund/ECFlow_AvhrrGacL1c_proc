@@ -2,6 +2,9 @@
 
 import shutil
 from global_config import *
+import logging
+
+logger = logging.getLogger('root')
 
 
 # move files to another directory 
@@ -36,7 +39,7 @@ def delete_file(fil):
 
 
 # def_pygac_cfg("/path/to/pygac.cfg", "/path/to/h5out")
-def def_pygac_cfg(fil, h5outdir, logger):
+def def_pygac_cfg(fil, h5outdir):
     try:
         f = open(fil, mode="w")
         f.write("[tle]\n")

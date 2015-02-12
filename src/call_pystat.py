@@ -11,7 +11,9 @@ from dateutil.rrule import rrule, DAILY
 
 from global_config import *
 from pycmsaf.argparser import str2date
+from pycmsaf.logger import setup_root_logger
 
+logger = setup_root_logger(name='root')
 
 # -- parser arguments
 parser = argparse.ArgumentParser(
@@ -41,9 +43,9 @@ date_range = str(args.start_date) + "_" + str(args.end_date)
 
 
 # -- make some screen output
-print (" * {0} started for {1} : {2} - {3}! ".
-       format(os.path.basename(__file__), args.satellite,
-              args.start_date, args.end_date))
+logger.info("{0} started for {1} : {2} - {3}! ".
+            format(os.path.basename(__file__), args.satellite,
+                   args.start_date, args.end_date))
 
 
 # -- define input for pystat
@@ -55,8 +57,8 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
 
     dstr = str(dt.strftime("%Y-%m-%d"))
 
-    print "   + call {0} for {1}".format(
-        os.path.basename(pystat_runtool), dstr)
+    logger.info("call {0} for {1}".
+                format(os.path.basename(pystat_runtool), dstr))
 
     pcmd = ["python", pystat_runtool,
             "--date={0}".format(dstr),
@@ -69,8 +71,9 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
                             stderr=subprocess.PIPE)
 
     stdout, stderr = proc.communicate()
-    print stdout
-    print stderr
+    logger.info("STDOUT:{0}".format(stdout))
+    logger.info("STDERR:{0}".format(stderr))
 
-print u" * {0} finished ! ".format(os.path.basename(__file__))
-print u" * Statistics added to {0}".format(sql_pystat_output)
+
+logger.info("{0} finished! ".format(os.path.basename(__file__)))
+logger.info("Statistics added to {0}".format(sql_pystat_output))

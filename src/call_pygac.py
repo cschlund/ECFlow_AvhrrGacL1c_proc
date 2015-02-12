@@ -13,6 +13,9 @@ from housekeeping import create_dir, delete_dir
 from housekeeping import def_pygac_cfg
 from pycmsaf.avhrr_gac.database import AvhrrGacDatabase
 from pycmsaf.argparser import str2date
+from pycmsaf.logger import setup_root_logger
+
+logger = setup_root_logger(name='root')
 
 # -- parser arguments
 parser = argparse.ArgumentParser(
@@ -43,9 +46,9 @@ date_range = str(args.start_date) + "_" + str(args.end_date)
 
 
 # -- make some screen output
-print (" * {0} started for {1} : {2} - {3}! \n".
-       format(os.path.basename(__file__), args.satellite,
-              args.start_date, args.end_date))
+logger.info("{0} started for {1} : {2} - {3}! \n".format(
+    os.path.basename(__file__), args.satellite,
+    args.start_date, args.end_date))
 
 
 # -- make dirs
@@ -59,7 +62,7 @@ out = create_dir("output/pygac", args.satellite,
 # -- create pygac config file
 cfgfile = os.path.join(out, "pygac_" + args.satellite +
                        "_" + date_range + ".cfg")
-def_pygac_cfg(cfgfile, out)
+def_pygac_cfg(cfgfile, out, logger)
 os.putenv('PYGAC_CONFIG_FILE', cfgfile)
 
 
@@ -89,35 +92,35 @@ for tarfile in tarfiles:
     source = os.path.join(ecp_tar_download, tarbase)
     l1bcnt = len(l1bfiles)
 
-    print "   +++ TarFile : {0} ({1} orbits)\n".format(tarbase, l1bcnt)
+    logger.info("TarFile : {0} ({1} orbits)\n".format(tarbase, l1bcnt))
 
     # -- loop over l1b files
     for i in range(len(l1bfiles)):
 
-        print "   Working on {0}.L1b -> {1}".format(i, l1bfiles[i])
+        logger.info("Working on {0}.L1b -> {1}".format(i, l1bfiles[i]))
         l1cfile = None
 
-        print "   + get L1b from tarfile"
+        logger.info("get L1b from tarfile")
 
         f1 = tarplat + "_" + taryear + "/" + l1bfiles[i]
         c1 = ["tar", "xf", source, "-C", inp, f1, "--strip=1"]
         p1 = subprocess.Popen(c1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p1.communicate()
-        print stdout
-        print stderr
+        logger.info("STDOUT:{0}".format(stdout))
+        logger.info("STDERR:{0}".format(stderr))
 
-        print "   + gunzip L1bfile"
+        logger.info("gunzip L1bfile")
 
         f2 = os.path.join(inp, l1bfiles[i])
         c2 = ["gunzip", f2]
         p2 = subprocess.Popen(c2, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p2.communicate()
-        print stdout
-        print stderr
+        logger.info("STDOUT:{0}".format(stdout))
+        logger.info("STDERR:{0}".format(stderr))
 
-        print "   + call {0}".format(os.path.basename(pygac_runtool))
+        logger.info("call {0}".format(os.path.basename(pygac_runtool)))
 
         l1b_basen = os.path.splitext(l1bfiles[i])[0]
         l1b_input = os.path.join(inp, l1b_basen)
@@ -127,12 +130,12 @@ for tarfile in tarfiles:
         stdout, stderr = p3.communicate()
         stderr_lines = stderr.split("\n")
 
-        print "     STDOUT ", stdout.strip()
-        print "     STDERR "
+        logger.info("STDOUT:{0}".format(stdout.strip()))
+        logger.info("STDERR:")
         for line in stderr_lines:
-            print "     ", line
+            print line
 
-        print "   + get corresponding L1c Filename"
+        logger.info("get corresponding L1c Filename")
 
         for line in stderr_lines:
             if "Filename" in line and "avhrr" in line:
@@ -141,13 +144,13 @@ for tarfile in tarfiles:
                 if l1cfile:
                     break
 
-        print "     L1c File: {0}\n".format(l1cfile)
+        logger.info("L1c File: {0}\n".format(l1cfile))
 
         if l1cfile is None:
             failed_l1b_orbits.append(l1bfiles[i])
             continue
 
-        print "   + call {0}".format(os.path.basename(add2sql_runtool))
+        logger.info("call {0}".format(os.path.basename(add2sql_runtool)))
 
         c4 = ["python", add2sql_runtool, "--l1b_file={0}".format(l1bfiles[i]),
               "--l1c_file={0}".format(l1cfile), "--l1c_path={0}".format(out),
@@ -170,16 +173,16 @@ for tarfile in tarfiles:
     flags_cnt = len(glob.glob(output3))
 
     if avhrr_cnt != l1bcnt and sunsat_cnt != l1bcnt and flags_cnt != l1bcnt:
-        print "   --- PYGAC FAILED {0} time(s):".format(len(failed_l1b_orbits))
+        logger.info("PYGAC FAILED {0} time(s):".format(len(failed_l1b_orbits)))
         for failed in failed_l1b_orbits:
-            print "       {0}".format(failed)
+            logger.info("{0}".format(failed))
     else:
         # -- delete dirs: where L1b files are extracted
         delete_dir(inp)
 
-    print "\n   +++ TarFile {0} finished: {1} L1b -> {2} L1c\n".\
-        format(tarbase, l1bcnt, avhrr_cnt)
+    logger.info("TarFile {0} finished: {1} L1b -> {2} L1c\n".
+                format(tarbase, l1bcnt, avhrr_cnt))
 
     # -- end of loop over tarfiles
 
-print " * {0} finished \n".format(os.path.basename(__file__))
+logger.info("{0} finished!".format(os.path.basename(__file__)))

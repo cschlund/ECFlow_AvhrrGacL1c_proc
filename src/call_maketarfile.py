@@ -16,7 +16,9 @@ from housekeeping import create_dir, delete_dir
 from pycmsaf.avhrr_gac.database import AvhrrGacDatabase
 from pycmsaf.argparser import str2date
 from pycmsaf.utilities import date_from_year_doy
+from pycmsaf.logger import setup_root_logger
 
+logger = setup_root_logger(name='root')
 
 # -- parser arguments
 parser = argparse.ArgumentParser(
@@ -40,8 +42,9 @@ date_range = str(args.start_date) + "_" + str(args.end_date)
 
 
 # -- make some screen output
-print (" * {0} started for {1} : {2} - {3}! ".format(
-    os.path.basename(__file__), args.satellite, args.start_date, args.end_date))
+logger.info("{0} started for {1} : {2} - {3}! ".
+            format(os.path.basename(__file__), args.satellite,
+                   args.start_date, args.end_date))
 
 
 # -- define l1c input
@@ -101,7 +104,7 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
 
     # -- create tarfile
     if date_tar_list:
-        print " * create {0} ".format(tar_file)
+        logger.info("create {0} ".format(tar_file))
         tar = tarfile.open(tar_file, "w:bz2")
         for tfile in date_tar_list:
             filedir = os.path.dirname(tfile)
@@ -109,7 +112,7 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
             tar.add(tfile, arcname=filenam)
         tar.close()
     else:
-        print " * No L1c files for {0}".format(date_string)
+        logger.info("No L1c files for {0}".format(date_string))
 
 # -- end of loop over date range
 
@@ -118,9 +121,9 @@ for dt in rrule(DAILY, dtstart=args.start_date, until=args.end_date):
 if len(files_list) > 0:
     files_left_over = list()
 
-    print " * These L1c files are left over:"
+    logger.info("These L1c files are left over:")
     for i in files_list:
-        print "   - {0}".format(i)
+        logger.info("{0}".format(i))
         files_left_over.append(i)
 
     if not os.path.exists(relict_dir):
@@ -176,16 +179,18 @@ for res in results:
     # if start and end dates are matching, then clean up completely
     if not os.path.exists(l1b_input):
         if args.start_date == tarsdate and args.end_date == taredate:
-            print " * delete {0} ".format(res_file)
+            logger.info("delete {0} ".format(res_file))
             delete_file(res_file)
         else:
-            print " * cannot delete {0} due to date mismatch".format(res_file)
+            logger.info("cannot delete {0} due to date mismatch".
+                        format(res_file))
     # do not remove l1b tarfile in ecp_tar_download
     # but remove l1b files in "input"
     else:
-        print " * cannot delete {0} due to errors in call_pygac.py".format(res_file)
-        print " * but delete {0} ".format(l1b_input)
+        logger.info("cannot delete {0} due to errors in call_pygac.py".
+                    format(res_file))
+        logger.info("but delete {0} ".format(l1b_input))
         delete_dir(l1b_input)
 
 
-print " * {0} finished !".format(os.path.basename(__file__))
+logger.info("{0} finished!".format(os.path.basename(__file__)))

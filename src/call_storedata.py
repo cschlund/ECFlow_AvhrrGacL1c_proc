@@ -13,6 +13,9 @@ import tarfile
 from pycmsaf.avhrr_gac.database import AvhrrGacDatabase
 from global_config import *
 from housekeeping import delete_file
+from pycmsaf.logger import setup_root_logger
+
+logger = setup_root_logger(name='root')
 
 
 # -- parser arguments
@@ -35,8 +38,8 @@ args = parser.parse_args()
 
 
 # -- make some screen output
-print (" * {0} look for tar files here: {1}".format(os.path.basename(__file__),
-                                                    args.inpdir))
+logger.info("{0} look for tar files here: {1}".
+            format(os.path.basename(__file__), args.inpdir))
 
 
 # -- create ecp_tar_upload directory if not existing
@@ -80,7 +83,7 @@ if tar_files_list:
             triples.append(d)
 
 else:
-    print " * There are currently no tarfiles!"
+    logger.info("There are currently no tarfiles!")
     sys.exit(0)
 
 
@@ -95,8 +98,8 @@ for trip in triples:
     days = db.get_days(sat=sat, year=year, month=month)
     db.close()
 
-    print (" * Check if complete for sat={0}, "
-           "year={1}, month={2}".format(sat, year, month))
+    logger.info("Check if complete for sat={0}, "
+                "year={1}, month={2}".format(sat, year, month))
 
     check_list = list()
     tfile_list = list()
@@ -111,7 +114,7 @@ for trip in triples:
         check_list.append(os.path.isfile(str_fil))
 
     if False in check_list:
-        print "   - not yet complete "
+        logger.info("not yet complete")
 
     else:
         # -- make monthly tarfilename
@@ -121,7 +124,7 @@ for trip in triples:
         ecfs_target = os.path.join(ecfs_l1c_dir, str(year),
                                    str(month).zfill(2))
 
-        print "   - complete -> make: {0} ".format(mon_tarfile)
+        logger.info("complete -> make: {0}".format(mon_tarfile))
 
         # -- create final tarfile
         tar = tarfile.open(mon_tarfile, "w:")
@@ -132,41 +135,41 @@ for trip in triples:
         tar.close()
 
         # -- make dir in ECFS
-        print (" * emkdir -p %s" % ecfs_target)
+        logger.info("emkdir -p {0}".format(ecfs_target))
         p1 = subprocess.Popen(
             ["emkdir", "-p", ecfs_target],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p1.communicate()
-        print stdout
-        print stderr
+        logger.info("STDOUT:{0}".format(stdout))
+        logger.info("STDERR:{0}".format(stderr))
 
         # -- copy file into ECFS dir
-        print " * ecp -o {0} {1}".format(mon_tarfile, ecfs_target)
+        logger.info("ecp -o {0} {1}".format(mon_tarfile, ecfs_target))
         p2 = subprocess.Popen(
             ["ecp", "-o", mon_tarfile, ecfs_target],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p2.communicate()
-        print stdout
-        print stderr
+        logger.info("STDOUT:{0}".format(stdout))
+        logger.info("STDERR:{0}".format(stderr))
 
         # -- change mode of mon_tarfile in ECFS
-        print " * echmod 555 {0}/{1}".format(ecfs_target, mon_tarbase)
+        logger.info("echmod 555 {0}/{1}".format(ecfs_target, mon_tarbase))
         p3 = subprocess.Popen(
             ["echmod", "555", ecfs_target + "/" + mon_tarbase],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p3.communicate()
-        print stdout
-        print stderr
+        logger.info("STDOUT:{0}".format(stdout))
+        logger.info("STDERR:{0}".format(stderr))
 
         # -- delete mon_tarfile on $SCRATCH
-        print " * delete {0} ".format(mon_tarfile)
+        logger.info("delete {0} ".format(mon_tarfile))
         delete_file(mon_tarfile)
 
         # -- delete tfile_list on $SCRATCH
-        print " * delete corresponding {0} files ".format(tar_file_suffix)
+        logger.info("delete corresponding {0} files ".format(tar_file_suffix))
         for tfile in tfile_list:
             delete_file(tfile)
 
 # -- END OF: loop over unique pairs
 
-print u" * {0} finished !".format(os.path.basename(__file__))
+logger.info("{0} finished!".format(os.path.basename(__file__)))

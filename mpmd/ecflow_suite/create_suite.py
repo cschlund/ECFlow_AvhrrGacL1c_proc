@@ -417,14 +417,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print "\n"
-    print (" * Script         : %s" % sys.argv[0])
-    print (" * start date     : %s" % args.sdate)
-    print (" * end date       : %s" % args.edate)
-    print (" * satellites     : %s" % args.satellites)
-    print (" * user date limit: %s" % args.userdatelimit)
-    print (" * ignore sats    : %s" % args.ignoresats)
-    print (" * Creating suite definition %s" % mysuite)
-    print "\n"
+    logger.info("\n")
+    logger.info("Script         : %s" % sys.argv[0])
+    logger.info("start date     : %s" % args.sdate)
+    logger.info("end date       : %s" % args.edate)
+    logger.info("satellites     : %s" % args.satellites)
+    logger.info("user date limit: %s" % args.userdatelimit)
+    logger.info("ignore sats    : %s" % args.ignoresats)
+    logger.info("Creating suite definition %s" % mysuite)
+    logger.info("\n")
 
     build_suite()
+
+    logger.info("SCRIPT {0} finished".format(os.path.basename(__file__)))

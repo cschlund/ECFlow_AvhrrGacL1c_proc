@@ -5,7 +5,7 @@ CWD=`pwd`
 # -- modify here --------------------------------------------
 
 # subfolder name, where you clone your repository
-TYPE="proc"
+TYPE="toplevel_of_gitrepo"
 
 # Base path (local & remote), user specific
 BASE="ms/de/sf7/cschlund"
@@ -14,10 +14,10 @@ BASE="ms/de/sf7/cschlund"
 export ECF_NODE=ecgb11
 
 # Port to be used for communication with the ecflow server
-export ECF_PORT=38515
+export ECF_PORT=35816
 
 # Name of the ecflow suite
-export SUITE=proc_avhrrgac_l1c
+export SUITE=avhrrgac_l1c
 
 # MPMD queue length (here the same for each queue)
 # mpmd_threads >= LENGTH

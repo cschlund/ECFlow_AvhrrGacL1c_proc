@@ -13,12 +13,11 @@ remote_user_name = "sf7"
 # base path, user specific
 basepath = "ms/de/sf7/cschlund"
 
-# subfolder, where your repository is located
-# e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
-itype = "proc"
+# subfolder name, where your repository is located
+itype = "toplevel_of_gitrepo"
 
 # suite name
-mysuite = "proc_avhrrgac_l1c"
+mysuite = "avhrrgac_l1c"
 
 # mpmd_threads_number must be >= $LENGTH defined in config.sh
 mpmd_threads_number = 24
@@ -88,4 +87,3 @@ mpmd_job_cmd = "%PYTHON% %MPMD_CLIENT% --dbfile=%MPMD_DATABASE% " \
 
 ecgate_job_cmd = "sbatch %ECF_JOB% > " \
                  "%ECF_OUT%%ECF_NAME%.%ECF_TRYNO%.sub 2>&1"
-

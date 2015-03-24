@@ -72,7 +72,8 @@ db = AvhrrGacDatabase(dbfile=sql_gacdb_archive)
 tarfiles = db.get_tarfiles(start_date=args.start_date,
                            end_date=args.end_date,
                            sats=[args.satellite],
-                           include_blacklisted=False)
+                           include_blacklisted=False,
+                           strict=False)
 
 
 # -- loop tarfiles results

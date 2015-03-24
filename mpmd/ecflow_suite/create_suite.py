@@ -283,7 +283,8 @@ def build_suite():
 
             # get tarfile list
             tarfiles = db.get_tarfiles(start_date=sd, end_date=ed,
-                                       sats=[sat], include_blacklisted=False)
+                                       sats=[sat], include_blacklisted=False,
+                                       strict=False)
 
             # -- loop over tarfiles for year & satellite
             for tarfil in tarfiles:

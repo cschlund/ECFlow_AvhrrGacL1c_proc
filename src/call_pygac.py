@@ -155,7 +155,8 @@ for tarfile in tarfiles:
 
         c4 = ["python", add2sql_runtool, "--l1b_file={0}".format(l1bfiles[i]),
               "--l1c_file={0}".format(l1cfile), "--l1c_path={0}".format(out),
-              "--db_file={0}".format(sql_gacdb_archive), "--verbose"]
+              "--db_file={0}".format(sql_gacdb_archive), 
+              "--tmp_dir={0}".format(relict_dir), "--verbose"]
         p4 = subprocess.Popen(c4, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p4.communicate()

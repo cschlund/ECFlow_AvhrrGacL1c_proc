@@ -180,8 +180,10 @@ for res in results:
     # if start and end dates are matching, then clean up completely
     if not os.path.exists(l1b_input):
         if args.start_date == tarsdate and args.end_date == taredate:
-            logger.info("delete {0} ".format(res_file))
-            delete_file(res_file)
+            # logger.info("delete {0} ".format(res_file))
+            # delete_file(res_file)
+            logger.info("TarFile: {0} successfully finished".format(res_file))
+            logger.info("Currently {0} won't be deleted!".format(res_file))
         else:
             logger.info("cannot delete {0} due to date mismatch".
                         format(res_file))

@@ -121,6 +121,12 @@ for tarfile in tarfiles:
         logger.info("STDOUT:{0}".format(stdout))
         logger.info("STDERR:{0}".format(stderr))
 
+        # # for testing
+        # if l1bfiles[i].startswith("NSS.GHRR.NK.D08009"):
+        #     pass
+        # else:
+        #     continue
+
         logger.info("call {0}".format(os.path.basename(pygac_runtool)))
 
         l1b_basen = os.path.splitext(l1bfiles[i])[0]

@@ -1,5 +1,9 @@
 *.idea
 global_config.py
 config_suite.py
+config.sh
 *.sqlite3
 *.pyc
+*.log
+*.def
+*test*

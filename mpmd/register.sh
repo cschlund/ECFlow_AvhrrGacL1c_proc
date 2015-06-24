@@ -25,7 +25,7 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
 mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=pystat \
                --length=$LENGTH --memory=3000 \
-               --threads_per_task=12 \
+               --threads_per_task=48 \
                --walltime=24:00:00 --suite=$SUITE \
                --pbs_queue=np
 

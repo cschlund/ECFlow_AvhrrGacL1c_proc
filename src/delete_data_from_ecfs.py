@@ -65,11 +65,12 @@ def remove_subdir(pwd, sdir):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='''{0} calculates the data
-            volume of specified ECFS directory.'''.format(scriptname))
+    parser = argparse.ArgumentParser(description='''{0} deletes data
+            from ECFS archive depending on user request.'''.format(scriptname))
     parser.add_argument('--ecfs_basepath', type=str, required=True, 
                         help="/user/path/to/data")
-    parser.add_argument('--pattern', type=str, help='''Search pattern, i.e. --pattern=tar''')
+    parser.add_argument('--pattern', type=str, help='''Search pattern, i.e.
+            --pattern=tar, --pattern=NOAA7''')
     parser.add_argument('--subdir', type=str, nargs='*', help='''Delete this subdirectory.''')
     args = parser.parse_args()
 

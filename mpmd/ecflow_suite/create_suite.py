@@ -233,10 +233,11 @@ def build_suite():
     # ignored satellites
     default_ignore_sats = ['NOAA6', 'NOAA8', 'NOAA10']
     if args.ignoresats:
-        add_ignore_sats = args.ignoresats
-        ignore_list = default_ignore_sats + add_ignore_sats
-    else:
-        ignore_list = default_ignore_sats
+        ignore_list = args.ignoresats
+    #    add_ignore_sats = args.ignoresats
+    #    ignore_list = default_ignore_sats + add_ignore_sats
+    #else:
+    #    ignore_list = default_ignore_sats
 
     if args.satellites:
         satellites = args.satellites

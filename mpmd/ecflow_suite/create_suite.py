@@ -230,21 +230,16 @@ def build_suite():
     # connect to database and get_sats list
     db = AvhrrGacDatabase(dbfile=gacdb_sqlite_file)
 
-    # ignored satellites
-    default_ignore_sats = ['NOAA6', 'NOAA8', 'NOAA10']
-    if args.ignoresats:
-        ignore_list = args.ignoresats
-    #    add_ignore_sats = args.ignoresats
-    #    ignore_list = default_ignore_sats + add_ignore_sats
-    #else:
-    #    ignore_list = default_ignore_sats
-
     if args.satellites:
         satellites = args.satellites
     else:
-        satellites = db.get_sats(start_date=args.sdate,
-                                 end_date=args.edate,
-                                 ignore_sats=ignore_list)
+        if args.ignoresats: 
+            satellites = db.get_sats(start_date=args.sdate, 
+                                     end_date=args.edate, 
+                                     ignore_sats=args.ignoresats)
+        else:
+            satellites = db.get_sats(start_date=args.sdate, 
+                                     end_date=args.edate)
 
     # -- loop over satellites
     for sat in satellites:

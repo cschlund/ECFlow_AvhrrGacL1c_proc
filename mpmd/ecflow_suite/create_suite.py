@@ -390,7 +390,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=sys.argv[0] + " creates the suite " + mysuite + " required by ecflow.")
 
-    parser.add_argument('--sdate', type=str2date, default="19810101",
+    parser.add_argument('--sdate', type=str2date, default="19780101",
                         help='start date, e.g. 20090101')
 
     parser.add_argument('--edate', type=str2date, default="20141231",

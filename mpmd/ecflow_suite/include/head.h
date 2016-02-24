@@ -2,7 +2,7 @@
 
 host=`hostname`
 if [[ $host == cc* ]] || [[ $host == nid* ]]; then
-    module load ecflow
+    module load ecflow/4.0.6
 fi
 
 ECF_NAME=%ECF_NAME%

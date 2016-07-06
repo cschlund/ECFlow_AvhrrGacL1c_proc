@@ -258,11 +258,15 @@ def build_suite():
 
             if args.userdatelimit:
                 if args.sdate.year <= year <= args.edate.year:
+                    sm = args.sdate.month
+                    em = args.edate.month
+                    sd = args.sdate.day
+                    ed = args.edate.day
                     # create family year for satellite
                     fam_year = fam_sat.add_family(str(year))
                     # start and end date for year & satellite
-                    sd = datetime.date(year, 1, 1)
-                    ed = datetime.date(year, 12, 31)
+                    sd = datetime.date(year, sm, sd)
+                    ed = datetime.date(year, em, ed)
                 else:
                     continue
             else:

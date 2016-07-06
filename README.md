@@ -3,6 +3,10 @@ ECFlow_AvhrrGacL1c_proc
 
 AVHRR GAC L1c processing using ecflow
 
+BRANCH information:
+    *master* branch operates on monthly tarfiles, e.g. NOAA7_1985_01.tar
+    *weekly_tarfiles* branch operates on weekly tarfiles, e.g. n07_1985_001x008.tar
+
 Dependencies: You need also to install
 
     https://github.com/Funkensieper/pycmsaf.git

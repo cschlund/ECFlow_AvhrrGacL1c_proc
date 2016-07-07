@@ -87,8 +87,8 @@ for tarfile in tarfiles:
 
     # -- some settings
     tarbase = os.path.basename(tarfile)
-    taryear = tarbase[4:-12]
-    tarplat = tarbase[:-17]
+    tarplat = ((tarbase.split("."))[0].split("_"))[0]
+    taryear = ((tarbase.split("."))[0].split("_"))[1]
 
     source = os.path.join(ecp_tar_download, tarbase)
     l1bcnt = len(l1bfiles)
@@ -103,8 +103,8 @@ for tarfile in tarfiles:
 
         logger.info("get L1b from tarfile")
 
-        f1 = tarplat + "_" + taryear + "/" + l1bfiles[i]
-        c1 = ["tar", "xf", source, "-C", inp, f1, "--strip=1"]
+        # extract L1b file to "-C inp", different location
+        c1 = ["tar", "xf", source, "-C", inp, l1bfiles[i]]
         p1 = subprocess.Popen(c1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p1.communicate()

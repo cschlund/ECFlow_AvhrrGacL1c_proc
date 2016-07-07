@@ -1,18 +1,16 @@
 #!/usr/bin/env python2.7
-from pycmsaf.logger import setup_root_logger
-
-logger = setup_root_logger(name='root')
 
 import sys
-# noinspection PyUnresolvedReferences
 import ecflow
 import argparse
 import datetime
+from calendar import monthrange
 from config_suite import *
 from pycmsaf.avhrr_gac.database import AvhrrGacDatabase
 from pycmsaf.argparser import str2date
-from pycmsaf.utilities import date_from_year_doy
 from pycmsaf.ssh_client import SSHClient
+from pycmsaf.logger import setup_root_logger
+logger = setup_root_logger(name='root')
 
 
 def str2upper(string_object):
@@ -29,10 +27,23 @@ def set_vars(suite):
     # Location of the MPMD client:
     suite.add_variable("MPMD_CLIENT", mpmd_client_prog)
 
-    # Specify the python interpreter to be used:
-    suite.add_variable("PYTHON",
-                       "PYTHONPATH=$PYTHONPATH:" +
-                       perm + " " + python_path)
+    # pygac path on CCA:
+    suite.add_variable("PYGAC_PATH", export_pygac_path)
+
+    # Specify the PYTHONPATH variable for mpmd job submission:
+    suite.add_variable("PYTHON", 
+            "PYTHONPATH=" + sitepack +':$PYTHONPATH' + " " + export_python_path)
+
+    # Specify the PYTHONPATH variable:
+    suite.add_variable("PYTPATH", 
+            "PYTHONPATH=" + sitepack + ':$PYTHONPATH')
+
+    # Specify the PATH variable:
+    suite.add_variable("BINPATH", "PATH=" + export_path + ':$PATH')
+
+    # Specify the LD_LIBRARY_PATH variable:
+    suite.add_variable("LIBPATH", 
+            "LD_LIBRARY_PATH=" + export_library_path + ':$LD_LIBRARY_PATH')
 
     # Directory on the remote machine, where all generated 
     # files from "ECF_HOME" will be copied before execution
@@ -284,30 +295,35 @@ def build_suite():
             # -- loop over tarfiles for year & satellite
             for tarfil in tarfiles:
 
-                # split tarfilename
+                logger.info("Working on: {0}".format(tarfil))
+
+                # split tarfilename "NOAA7_1985_01.tar"
                 tarbase = os.path.basename(tarfil)
-                tardoys = ((tarbase.split("."))[0].split("_"))[2].split("x")
-                taryear = (tarbase.split("."))[0].split("_")[1]
-                tarsdate = date_from_year_doy(int(taryear), int(tardoys[0]))
-                taredate = date_from_year_doy(int(taryear), int(tardoys[1]))
+                tarmonth = ((tarbase.split("."))[0].split("_"))[2]
+                taryear  = ((tarbase.split("."))[0].split("_"))[1]
 
-                first_tar_date = tarsdate
-                last_tar_date = taredate
-
+                # calendar.monthrange(year, month)
+                #   Returns weekday of first day of the month and number of days
+                #   in month, for the specified year and month.
+                mr = monthrange(int(taryear), int(tarmonth))
+                first_tar_date = datetime.date(int(taryear), int(tarmonth), 1)
+                last_tar_date = datetime.date(int(taryear), int(tarmonth), mr[1])
                 date_str = first_tar_date.strftime("%Y%m%d") + \
                            '_' + last_tar_date.strftime("%Y%m%d")
 
                 if tar_counter % dearch_interval == 0:
                     if fam_chunk:
-                        # Add all collected tarfiles to the current dearchiving family
-                        fam_chunk.add_variable('TARFILES',
-                                               ' '.join(tarfiles_within_current_interval))
+                        # Add all collected tarfiles to the 
+                        # current dearchiving family
+                        fam_chunk.add_variable('TARFILES', 
+                                ' '.join(tarfiles_within_current_interval))
 
                         # Reset list of tarfiles within current interval
                         tarfiles_within_current_interval = []
 
                     # Create new family for dearchiving the next chunk of data.
-                    fam_chunk = fam_dearch.add_family('chunk{0}'.format(dearch_counter))
+                    fam_chunk = fam_dearch.add_family('chunk{0}'.
+                            format(dearch_counter))
                     add_dearchiving_tasks(fam_chunk)
                     fam_chunk.add_variable("ECF_TRIES", 2)
                     dearch_counter += 1
@@ -315,14 +331,14 @@ def build_suite():
                     # Make it wait for the current MPMD family minus a possible
                     # offset in order to hide IO time behind computation time.
                     if fam_tar:
-                        add_trigger(fam_chunk,
-                                    mpmd_families[tar_counter - io_hiding_offset - 1])
+                        add_trigger(fam_chunk, 
+                                mpmd_families[tar_counter - io_hiding_offset - 1])
                     else:
                         # There is no trigger for the first IO chunk.
                         pass
 
                 # Create one MPMD family for each tar_range_archive
-                fam_tar = fam_year.add_family('{0}'.format(date_str))
+                fam_tar = fam_year.add_family('{0}'.format(tarmonth))
                 tar_counter += 1
 
                 # add start and end day of fam_tar
@@ -343,8 +359,8 @@ def build_suite():
     # -- end of loop over satellites
 
     # Add last chunk of collected tarfiles to the last dearchiving family
-    fam_chunk.add_variable('TARFILES',
-                           ' '.join(tarfiles_within_current_interval))
+    fam_chunk.add_variable('TARFILES', 
+            ' '.join(tarfiles_within_current_interval))
 
     # close database connection
     db.close()

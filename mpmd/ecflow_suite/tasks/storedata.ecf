@@ -1,6 +1,5 @@
 %include <pbs_serial.h>
 %include <head.h>
-%include <myexport.h>
 echo "I am task %TASK% in family %FAMILY% responsible for archiving l1c results from %TAR_UPLOAD% into ECFS"
 %CALL_STOREDATA% -i %TAR_UPLOAD%
 %include <tail.h>

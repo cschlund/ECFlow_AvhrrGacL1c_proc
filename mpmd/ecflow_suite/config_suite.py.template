@@ -13,18 +13,22 @@ remote_user_name = "sf7"
 # base path, user specific
 basepath = "ms/de/sf7/cschlund"
 
-# subfolder name, where your repository is located
-itype = "toplevel_of_gitrepo"
+# subfolder, where your repository is located
+# e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
+itype = "GAC_PROC"
 
 # suite name
-mysuite = "avhrrgac_l1c"
+mysuite = "FINAL_GAC_PROC"
 
 # mpmd_threads_number must be >= $LENGTH defined in config.sh
-mpmd_threads_number = 24
+mpmd_threads_number = 4
+#mpmd_threads_number = 120
+#mpmd_threads_number = 72
+#mpmd_threads_number = 48
 serial_threads_number = 1
 
 # dearchiving interval: multiple of mpmd_threads_number
-interval_value = 120
+interval_value = mpmd_threads_number * 2
 
 # io offset
 io_offset_value = interval_value - 1
@@ -48,21 +52,33 @@ cca_pystat = os.path.join(perm_base, "src", "call_pystat.py")
 cca_maketarfile = os.path.join(perm_base, "src", "call_maketarfile.py")
 cca_storedata = os.path.join(perm_base, "src", "call_storedata.py")
 
-# -- pycmsaf software
-pycmsaf = "/perm/ms/de/sf7/cschlund/pycmsaf"
+# # -- old pycmsaf: required by CC4CL und cloud_simulator
+# pycmsaf  = "/perm/ms/de/sf7/cschlund/pycmsaf"
+# pycmsaf_bin = os.path.join(pycmsaf, "bin")
+
+# -- new pycmsaf software: python setup.py install --prefix=$PERM/usr
+prefix = "/perm/ms/de/sf7/usr"
+sitepack = os.path.join(prefix, "lib/python2.7/site-packages")
+binaries = os.path.join(prefix, "bin")
+library  = os.path.join(prefix, "lib")
 
 # -- paths to be exported: $PATH, $PYTHONPATH
-pycmsaf_bin = os.path.join(pycmsaf, "bin")
-python_path = "/usr/local/apps/python/current/bin/python"
+export_path = binaries
+export_python_path = "/usr/local/apps/python/current/bin/python"
+export_library_path = library
+# -- installed on CCA
+export_pygac_path = os.path.join(sitepack, "pygac-v0.1.0-py2.7.egg/pygac")
 
 # -- server settings @ ecgate
 mpmd_mode = "remote"
 mpmd_submit_cmd = "qsub"
-mpmd_submit_script = os.path.join(pycmsaf_bin, "mpmd_submit.py")
 mpmd_database = os.path.join(perm_base, "mpmd", "mpmd_" + itype + ".sqlite3")
-ecflow_submit = os.path.join(pycmsaf_bin, "ecf_submit.py")
-mpmd_client_prog = os.path.join(pycmsaf_bin, "mpmd_client.py")
-gacdb_sqlite_file = os.path.join(pycmsaf, "AVHRR_GAC_archive.sqlite3")
+# -- new pycmsaf software
+mpmd_submit_script = os.path.join(binaries, "pycmsaf-mpmd-submit")
+ecflow_submit = os.path.join(binaries, "pycmsaf-ecf-submit")
+mpmd_client_prog = os.path.join(binaries, "pycmsaf-mpmd-client")
+# -- basis l1 archive sqlite
+gacdb_sqlite_file = os.path.join(perm_base, "sql", "AVHRR_GAC_archive.sqlite3")
 suite_home_dir = os.path.join(perm_base, "mpmd/ecflow_suite")
 ecf_files_dir = os.path.join(suite_home_dir, "tasks")
 ecf_include_dir = os.path.join(suite_home_dir, "include")
@@ -87,3 +103,4 @@ mpmd_job_cmd = "%PYTHON% %MPMD_CLIENT% --dbfile=%MPMD_DATABASE% " \
 
 ecgate_job_cmd = "sbatch %ECF_JOB% > " \
                  "%ECF_OUT%%ECF_NAME%.%ECF_TRYNO%.sub 2>&1"
+

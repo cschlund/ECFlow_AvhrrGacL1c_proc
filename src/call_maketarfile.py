@@ -7,15 +7,12 @@
 import fnmatch
 import argparse
 import tarfile
-
 from dateutil.rrule import rrule, DAILY
-
 from global_config import *
 from housekeeping import move_files, delete_file
 from housekeeping import create_dir, delete_dir
 from pycmsaf.avhrr_gac.database import AvhrrGacDatabase
 from pycmsaf.argparser import str2date
-from pycmsaf.utilities import date_from_year_doy
 from pycmsaf.logger import setup_root_logger
 
 logger = setup_root_logger(name='root')
@@ -169,27 +166,20 @@ results = db.get_tarfiles(start_date=args.start_date, end_date=args.end_date,
 db.close()
 
 for res in results:
+    # "NOAA7_1985_01.tar"
+    # "NOAA9_1985_01.tar"
     base = os.path.basename(res)
     res_file = os.path.join(ecp_tar_download, base)
-    tardoys = ((base.split("."))[0].split("_"))[2].split("x")
-    taryear = (base.split("."))[0].split("_")[1]
-    tarsdate = date_from_year_doy(int(taryear), int(tardoys[0]))
-    taredate = date_from_year_doy(int(taryear), int(tardoys[1]))
 
-    # if no corresponding l1b input files are under "input" and
-    # if start and end dates are matching, then clean up completely
-    if not os.path.exists(l1b_input):
-        if args.start_date == tarsdate and args.end_date == taredate:
-            # logger.info("delete {0} ".format(res_file))
-            # delete_file(res_file)
-            logger.info("TarFile: {0} successfully finished".format(res_file))
-            logger.info("Currently {0} won't be deleted!".format(res_file))
-        else:
-            logger.info("cannot delete {0} due to date mismatch".
-                        format(res_file))
-    # do not remove l1b tarfile in ecp_tar_download
-    # but remove l1b files in "input"
+    # if no corresponding l1b input files are under "input", pygac=OK
+    if not os.path.exists(l1b_input): 
+        # logger.info("delete {0} ".format(res_file))
+        # delete_file(res_file)
+        logger.info("TarFile: {0} successfully finished".format(res_file))
+        logger.info("Currently {0} won't be deleted!".format(res_file))
     else:
+        # do not remove l1b tarfile in ecp_tar_download
+        # but remove l1b files in "input"
         logger.info("cannot delete {0} due to errors in call_pygac.py".
                     format(res_file))
         logger.info("but delete {0} ".format(l1b_input))

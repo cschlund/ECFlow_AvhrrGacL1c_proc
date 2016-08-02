@@ -10,6 +10,10 @@ import os
 remote_host_name = "cca"
 remote_user_name = "sf7"
 
+# sqlite basis file (white-listed L1b) located at PERM@cca
+#gacdb_basis = "AVHRR_GAC_archive_only_n7n9_test_data.sqlite3"
+gacdb_basis = "AVHRR_GAC_archive_only_n11n14_test_data.sqlite3"
+
 # base path, user specific
 basepath = "ms/de/sf7/cschlund"
 
@@ -78,7 +82,7 @@ mpmd_submit_script = os.path.join(binaries, "pycmsaf-mpmd-submit")
 ecflow_submit = os.path.join(binaries, "pycmsaf-ecf-submit")
 mpmd_client_prog = os.path.join(binaries, "pycmsaf-mpmd-client")
 # -- basis l1 archive sqlite
-gacdb_sqlite_file = os.path.join(perm_base, "sql", "AVHRR_GAC_archive.sqlite3")
+gacdb_sqlite_file = os.path.join(perm_base, "sql", gacdb_basis)
 suite_home_dir = os.path.join(perm_base, "mpmd/ecflow_suite")
 ecf_files_dir = os.path.join(suite_home_dir, "tasks")
 ecf_include_dir = os.path.join(suite_home_dir, "include")

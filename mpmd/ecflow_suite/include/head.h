@@ -13,6 +13,10 @@ ECF_TRYNO=%ECF_TRYNO%
 ECF_RID=$$
 export ECF_NAME ECF_NODE ECF_PASS ECF_TRYNO ECF_PORT ECF_RID
 
+export %BINPATH%
+export %LIBPATH%
+export %PYTPATH%
+
 ERROR() { echo ERROR ; ecflow_client --abort=trap; exit 1 ; }
 trap ERROR 0
 

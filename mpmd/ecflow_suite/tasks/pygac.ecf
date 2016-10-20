@@ -1,5 +1,5 @@
 %include <head.h>
-%include <myexport.h>
+export PATH=%PYGAC_PATH%:$PATH
 echo "I am task %TASK% in family %FAMILY% responsible for running pygac"
 %CALL_PYGAC% -sat %SATELLITE% -sd %START_DATE% -ed %END_DATE%
 %include <tail.h>

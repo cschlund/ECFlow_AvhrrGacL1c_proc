@@ -29,10 +29,23 @@ def set_vars(suite):
     # Location of the MPMD client:
     suite.add_variable("MPMD_CLIENT", mpmd_client_prog)
 
-    # Specify the python interpreter to be used:
-    suite.add_variable("PYTHON",
-                       "PYTHONPATH=$PYTHONPATH:" +
-                       perm + " " + python_path)
+    # pygac path on CCA:
+    suite.add_variable("PYGAC_PATH", export_pygac_path)
+
+    # Specify the PYTHONPATH variable for mpmd job submission:
+    suite.add_variable("PYTHON", 
+            "PYTHONPATH=" + sitepack +':$PYTHONPATH' + " " + export_python_path)
+
+    # Specify the PYTHONPATH variable:
+    suite.add_variable("PYTPATH", 
+            "PYTHONPATH=" + sitepack + ':$PYTHONPATH')
+
+    # Specify the PATH variable:
+    suite.add_variable("BINPATH", "PATH=" + export_path + ':$PATH')
+
+    # Specify the LD_LIBRARY_PATH variable:
+    suite.add_variable("LIBPATH",
+            "LD_LIBRARY_PATH=" + export_library_path + ':$LD_LIBRARY_PATH')
 
     # Directory on the remote machine, where all generated 
     # files from "ECF_HOME" will be copied before execution

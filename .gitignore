@@ -7,3 +7,7 @@ config.sh
 *.log
 *.def
 *test*
+mpmd/generated/
+scratch
+sql/*txt
+src/*txt

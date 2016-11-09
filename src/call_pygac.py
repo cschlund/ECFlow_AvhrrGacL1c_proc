@@ -5,9 +5,12 @@
 # C.Schlundt: February, 2015: add2sqlite after pygac added
 #
 
+import sys
 import argparse
 import subprocess
 import glob
+import quick_l1c_analysis as quick
+from datetime import datetime, timedelta
 from global_config import *
 from housekeeping import create_dir, delete_dir
 from housekeeping import def_pygac_cfg
@@ -99,7 +102,6 @@ for tarfile in tarfiles:
     for i in range(len(l1bfiles)):
 
         logger.info("Working on {0}.L1b -> {1}".format(i, l1bfiles[i]))
-        l1cfile = None
 
         logger.info("get L1b from tarfile")
 
@@ -121,12 +123,6 @@ for tarfile in tarfiles:
         logger.info("STDOUT:{0}".format(stdout))
         logger.info("STDERR:{0}".format(stderr))
 
-        # # for testing
-        # if l1bfiles[i].startswith("NSS.GHRR.NK.D08009"):
-        #     pass
-        # else:
-        #     continue
-
         logger.info("call {0}".format(os.path.basename(pygac_runtool)))
 
         l1b_basen = os.path.splitext(l1bfiles[i])[0]
@@ -142,16 +138,45 @@ for tarfile in tarfiles:
         for line in stderr_lines:
             print line
 
-        logger.info("get corresponding L1c Filename")
+        logger.info("collect information from STDERR")
+
+        l1cfile = None
+        l1cfile_fully_qualified = None
+        pygac_took = None
+        p_warnings = list()
+        p_errors = list()
 
         for line in stderr_lines:
-            if "Filename" in line and "avhrr" in line:
+            if "warning" in line.lower():
+                p_warnings.append(line)
+            elif "error" in line.lower():
+                p_errors.append(line)
+            elif "Filename: "+pygac_prefix+"_avhrr" in line:
                 line_list = line.split()
                 l1cfile = filter(lambda x: '.h5' in x, line_list)[0]
-                if l1cfile:
-                    break
+                l1cfile_fully_qualified = os.path.join(out, l1cfile)
+            elif "pygac took" in line.lower():
+                ll = line.split()
+                t = datetime.strptime(ll[-1], "%H:%M:%S.%f")
+                pygac_took = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second,
+                                       microseconds=t.microsecond).total_seconds()
+            else:
+                continue
 
-        logger.info("L1c File: {0}\n".format(l1cfile))
+        logger.info("L1c File: {0}".format(l1cfile_fully_qualified))
+        logger.info("Errors  : {0}".format(p_errors))
+        logger.info("Warnings: {0}".format(p_warnings))
+        logger.info("RunTime : {0}".format(pygac_took))
+
+        logger.info("Collect records for quick L1c analysis\n")
+
+        quick.collect_records(l1b_file=l1bfiles[i], 
+                              l1c_file=l1cfile_fully_qualified, 
+                              sql_file=sql_pygac_logout, 
+                              pygac_version=pygac_commit, 
+                              pygac_took=pygac_took, 
+                              pygac_errors=p_errors, 
+                              pygac_warnings=p_warnings)
 
         if l1cfile is None:
             failed_l1b_orbits.append(l1bfiles[i])

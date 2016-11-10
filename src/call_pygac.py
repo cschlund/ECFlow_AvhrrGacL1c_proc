@@ -129,16 +129,18 @@ for tarfile in tarfiles:
         l1b_input = os.path.join(inp, l1b_basen)
         c3 = ["python", pygac_runtool, l1b_input, "0", "0"]
         p3 = subprocess.Popen(c3, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
         stdout, stderr = p3.communicate()
+        stdout_lines = stdout.split("\n")
         stderr_lines = stderr.split("\n")
+        std_lines = stdout_lines + stderr_lines
 
-        logger.info("STDOUT:{0}".format(stdout.strip()))
-        logger.info("STDERR:")
-        for line in stderr_lines:
+        logger.info("PyGAC STDOUT")
+        for line in stdout_lines:
             print line
 
-        logger.info("collect information from STDERR")
+        logger.info("PyGAC STDERR:")
+        for line in stderr_lines:
+            print line
 
         l1cfile = None
         l1cfile_fully_qualified = None
@@ -146,7 +148,8 @@ for tarfile in tarfiles:
         p_warnings = list()
         p_errors = list()
 
-        for line in stderr_lines:
+        logger.info("collect information from STDOUT & STDERR")
+        for line in std_lines:
             if "warning" in line.lower():
                 p_warnings.append(line)
             elif "error" in line.lower():
@@ -169,7 +172,6 @@ for tarfile in tarfiles:
         logger.info("RunTime : {0}".format(pygac_took))
 
         logger.info("Collect records for quick L1c analysis\n")
-
         quick.collect_records(l1b_file=l1bfiles[i], 
                               l1c_file=l1cfile_fully_qualified, 
                               sql_file=sql_pygac_logout, 
@@ -189,10 +191,9 @@ for tarfile in tarfiles:
               "--db_file={0}".format(sql_gacdb_archive), 
               "--tmp_dir={0}".format(relict_dir), "--verbose"]
         p4 = subprocess.Popen(c4, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
         stdout, stderr = p4.communicate()
-        print stdout
-        print stderr
+        logger.info("PySTAT STDOUT:{0}".format(stdout))
+        logger.info("PySTAT STDERR:{0}".format(stderr))
 
         # -- end of loop over l1bfiles
 

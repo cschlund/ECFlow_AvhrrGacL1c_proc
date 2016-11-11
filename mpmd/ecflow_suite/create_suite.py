@@ -430,7 +430,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    logger.info("\n")
     logger.info("Script         : %s" % sys.argv[0])
     logger.info("start date     : %s" % args.sdate)
     logger.info("end date       : %s" % args.edate)
@@ -438,7 +437,6 @@ if __name__ == '__main__':
     logger.info("user date limit: %s" % args.userdatelimit)
     logger.info("ignore sats    : %s" % args.ignoresats)
     logger.info("Creating suite definition %s" % mysuite)
-    logger.info("\n")
 
     build_suite()
 

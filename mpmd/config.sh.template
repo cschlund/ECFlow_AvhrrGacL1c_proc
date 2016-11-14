@@ -5,7 +5,7 @@ CWD=`pwd`
 # -- modify here --------------------------------------------
 
 # subfolder name, where you clone your repository
-TYPE="toplevel_of_gitrepo"
+TYPE="GAC_PROC"
 
 # Base path (local & remote), user specific
 BASE="ms/de/sf7/cschlund"
@@ -14,14 +14,17 @@ BASE="ms/de/sf7/cschlund"
 export ECF_NODE=ecgb11
 
 # Port to be used for communication with the ecflow server
-export ECF_PORT=35816
+export ECF_PORT=35818
 
 # Name of the ecflow suite
-export SUITE=avhrrgac_l1c
+export SUITE=FINAL_GAC_PROC
 
 # MPMD queue length (here the same for each queue)
 # mpmd_threads >= LENGTH
-export LENGTH=24
+#export LENGTH=4
+#export LENGTH=48
+#export LENGTH=72
+export LENGTH=120
 
 # Name of the host finally executing the MPMD tasks
 export REMOTE_HOST=cca

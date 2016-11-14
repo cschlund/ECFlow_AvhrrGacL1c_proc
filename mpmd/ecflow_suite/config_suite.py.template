@@ -11,8 +11,8 @@ remote_host_name = "cca"
 remote_user_name = "sf7"
 
 # sqlite basis file (white-listed L1b) located at PERM@cca
-gacdb_basis = "AVHRR_GAC_archive_201610_with_tsm_correction.sqlite3"
-#gacdb_basis = "AVHRR_GAC_archive_201610_without_tsm_correction.sqlite3"
+# feature-clock_c8a7b2c_20151130 (PyGAC, no bug-fix, AVHRR GAC FCDR v2)
+gacdb_basis = "AVHRR_GAC_archive_201611_pygac-commit-c8a7b2c.sqlite3"
 
 # base path, user specific
 basepath = "ms/de/sf7/cschlund"
@@ -25,10 +25,10 @@ itype = "GAC_PROC"
 mysuite = "FINAL_GAC_PROC"
 
 # mpmd_threads_number must be >= $LENGTH defined in config.sh
-#mpmd_threads_number = 120
-mpmd_threads_number = 72
 #mpmd_threads_number = 48
 #mpmd_threads_number = 4
+#mpmd_threads_number = 72
+mpmd_threads_number = 120
 serial_threads_number = 1
 
 # dearchiving interval: multiple of mpmd_threads_number
@@ -55,6 +55,10 @@ cca_pygac = os.path.join(perm_base, "src", "call_pygac.py")
 cca_pystat = os.path.join(perm_base, "src", "call_pystat.py")
 cca_maketarfile = os.path.join(perm_base, "src", "call_maketarfile.py")
 cca_storedata = os.path.join(perm_base, "src", "call_storedata.py")
+
+# # -- old pycmsaf: required by CC4CL und cloud_simulator
+# pycmsaf  = "/perm/ms/de/sf7/cschlund/pycmsaf"
+# pycmsaf_bin = os.path.join(pycmsaf, "bin")
 
 # -- new pycmsaf software: python setup.py install --prefix=$PERM/usr
 prefix = "/perm/ms/de/sf7/usr"

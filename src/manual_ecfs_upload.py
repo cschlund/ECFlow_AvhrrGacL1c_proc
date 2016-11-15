@@ -21,9 +21,7 @@ parser = argparse.ArgumentParser(
     description='''{0} uploads ready AVHRR GAC L1c data on demand.
     Global paths and settings are defined in "global_config.py".
     The subroutines are defined in
-    "housekeeping.py". '''.format(os.path.basename(__file__),
-                                  tar_file_prefix, tar_file_suffix,
-                                  tar_file_prefix, tar_file_suffix2))
+    "housekeeping.py". '''.format(os.path.basename(__file__))
 
 parser.add_argument('-i', '--inpdir', required=True, type=str,
                     help='String, e.g. /path/to/files*{0}'.

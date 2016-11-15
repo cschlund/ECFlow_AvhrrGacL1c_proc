@@ -192,8 +192,8 @@ for tarfile in tarfiles:
               "--tmp_dir={0}".format(relict_dir), "--verbose"]
         p4 = subprocess.Popen(c4, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p4.communicate()
-        logger.info("PySTAT STDOUT:{0}".format(stdout))
-        logger.info("PySTAT STDERR:{0}".format(stderr))
+        logger.info("add2sqlite_l1c_info STDOUT:{0}".format(stdout))
+        logger.info("add2sqlite_l1c_info STDERR:{0}".format(stderr))
 
         # -- end of loop over l1bfiles
 

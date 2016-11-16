@@ -7,6 +7,8 @@
 # Global paths and settings are defined in "global_config.py".
 # The subroutines are defined in "housekeeping.py"
 #
+import sys
+import argparse
 import fnmatch
 import subprocess
 from global_config import *
@@ -35,18 +37,18 @@ def copy_to_ecfs_archive(ecfs_dir, ecfs_file):
     Copy tarball to ECFS
     :return:
     """
-    # -- make dir in ECFS
-    logger.info("emkdir -p {0}".format(ecfs_dir))
-    exe_sb(cmd=["emkdir", "-p", ecfs_dir])
+    cmd = ["emkdir", "-p", ecfs_dir]
+    logger.info("{cmd}".format(cmd=cmd))
+    exe_sb(cmd=cmd)
 
-    # -- copy file into ECFS dir
-    logger.info("ecp -o {0} {1}".format(ecfs_file, ecfs_dir))
-    exe_sb(cmd=["ecp", "-o", ecfs_file, ecfs_dir])
+    cmd = ["ecp", "-o", ecfs_file, ecfs_dir]
+    logger.info("{cmd}".format(cmd=cmd))
+    exe_sb(cmd=cmd)
 
-    # -- change mode of ecfs_file in ECFS
     ecfs_base = os.path.basename(ecfs_file)
-    logger.info("echmod 555 {0}/{1}".format(ecfs_dir, ecfs_base))
-    exe_sb(cmd=["echmod", "555", ecfs_dir + "/" + ecfs_base])
+    cmd = ["echmod", "555", ecfs_dir + "/" + ecfs_base]
+    logger.info("{cmd}".format(cmd=cmd))
+    exe_sb(cmd=cmd)
 
 
 def make_temp_dir(temp_dir, temp_sub):
@@ -77,7 +79,7 @@ def pygac_sat_list():
     return pyg_list
 
 
-def collect_log_files(tmp_dir):
+def collect_log_files(tmp_dir, test=None):
     """
     Collect and compress log files related to current processing.
     :param tmp_dir: tarballs will be written to this directory
@@ -89,22 +91,26 @@ def collect_log_files(tmp_dir):
     tdir = make_temp_dir(temp_dir=tmp_dir, temp_sub=tsub)
 
     source = os.path.join(ecfbase, "mpmd/generated")
-    exe_sb(cmd=["cp", "-r", source, tdir])
+    cmd = ["cp", "-r", source, tdir]
+    logger.info("{cmd}".format(cmd=cmd))
+    exe_sb(cmd=cmd)
 
     source = os.path.join(datadir, "mpmd/log")
-    exe_sb(cmd=["cp", "-r", source, tdir])
+    cmd = ["cp", "-r", source, tdir]
+    logger.info("{cmd}".format(cmd=cmd))
+    exe_sb(cmd=cmd)
 
     tar_name = os.path.join(tmp_dir, tsub)
     tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
     delete_dir(tmpdir=tdir)
 
-    edir = os.path.join(ecfs_l1c_dir, "proc_history")
-    copy_to_ecfs_archive(ecfs_dir=edir, ecfs_file=tar_arch)
+    if not test:
+        copy_to_ecfs_archive(ecfs_dir=proc_history, ecfs_file=tar_arch)
 
     logger.info("DONE {0}".format(os.path.basename(tar_arch)))
 
 
-def collect_sql_files(tmp_dir):
+def collect_sql_files(tmp_dir, test=None):
     """
     Collect and compress SQLite databases related to current processing.
     :param tmp_dir: tarball will be written to this directory
@@ -123,13 +129,13 @@ def collect_sql_files(tmp_dir):
     tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
     delete_dir(tmpdir=tdir)
 
-    edir = os.path.join(ecfs_l1c_dir, "proc_history")
-    copy_to_ecfs_archive(ecfs_dir=edir, ecfs_file=tar_arch)
+    if not test:
+        copy_to_ecfs_archive(ecfs_dir=proc_history, ecfs_file=tar_arch)
 
     logger.info("DONE {0}".format(os.path.basename(tar_arch)))
 
 
-def collect_invalid_orbits(tmp_dir):
+def collect_invalid_orbits(tmp_dir, test=None):
     """
     Collect invalid AVHRR GAC L1c orbits and compress files per satellite.
     :param tmp_dir: tarballs will be written to this directory
@@ -153,26 +159,47 @@ def collect_invalid_orbits(tmp_dir):
             tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
             delete_dir(tmpdir=tdir)
 
-            edir = os.path.join(ecfs_l1c_dir, "proc_history")
-            copy_to_ecfs_archive(ecfs_dir=edir, ecfs_file=tar_arch)
+            if not test:
+                copy_to_ecfs_archive(ecfs_dir=proc_history, ecfs_file=tar_arch)
 
             logger.info("DONE {0}".format(os.path.basename(tar_arch)))
 
 
 if __name__ == '__main__':
 
-    logger.info("{0} started!".format(os.path.basename(__file__)))
+    # -- parser arguments
+    parser = argparse.ArgumentParser(description='''{0}
+    collects log files, sql files and invalid AVHRR GAC L1c orbits
+    on demand making tarballs, which are saved to ECFS archive.
+    Global paths and settings are defined in
+    "global_config.py.'''.format(os.path.basename(__file__)))
+
+    parser.add_argument('--logs', action="store_true",
+                        help="Collect and save log files (perm, scratch).")
+
+    parser.add_argument('--sqls', action="store_true",
+                        help="Collect and save SQL databases.")
+
+    parser.add_argument('--invalids', action="store_true",
+                        help="Collect and save invalid AVHRR GAC L1c orbits.")
+
+    parser.add_argument('--test', action="store_true",
+                        help="Testing option, copy to ECFS disabled.")
+
+    args = parser.parse_args()
+
+    # Call function associated with the selected subcommand
+    logger.info("{0} start for {1}".format(sys.argv[0], args))
 
     work_dir = make_temp_dir(temp_dir=datadir, temp_sub=pygac_commit)
 
-    logger.info("Work Dir: {0}".format(work_dir))
-    if datadir:
-        collect_log_files(tmp_dir=work_dir)
+    if args.logs:
+        collect_log_files(tmp_dir=work_dir, test=args.test)
 
-    if sqlite_dir:
-        collect_sql_files(tmp_dir=work_dir)
+    if args.sqls:
+        collect_sql_files(tmp_dir=work_dir, test=args.test)
 
-    if relict_dir:
-        collect_invalid_orbits(tmp_dir=work_dir)
+    if args.invalids:
+        collect_invalid_orbits(tmp_dir=work_dir, test=args.test)
 
     logger.info("{0} finished!".format(os.path.basename(__file__)))

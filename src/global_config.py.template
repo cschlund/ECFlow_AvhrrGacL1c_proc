@@ -27,6 +27,9 @@ ecfs_l1c_dir = "ec:/sf7/data/test/feature-clock_c8a7b2c"
 #ecfs_l1b_dir = "ec:/sf2/test/gacdb"
 #ecfs_l1c_dir = "ec:/sf7/data/test"
 
+# -- save processing history
+proc_history = os.path.join(ecfs_l1c_dir, "proc_history")
+
 # --------------------------------------------------------------------
 # -- don't touch unless you know what you are doing
 # --------------------------------------------------------------------

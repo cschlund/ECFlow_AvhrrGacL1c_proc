@@ -79,10 +79,11 @@ def pygac_sat_list():
     return pyg_list
 
 
-def collect_log_files(tmp_dir, test=None):
+def collect_log_files(tmp_dir, tar_dir, test=None):
     """
     Collect and compress log files related to current processing.
-    :param tmp_dir: tarballs will be written to this directory
+    :param tmp_dir: copy files for tarball creation to this directory
+    :param tar_dir: tarball written to this directory
     :return:
     """
     logger.info("Collect mpmd and task log-files")
@@ -100,7 +101,7 @@ def collect_log_files(tmp_dir, test=None):
     logger.info("{cmd}".format(cmd=cmd))
     exe_sb(cmd=cmd)
 
-    tar_name = os.path.join(tmp_dir, tsub)
+    tar_name = os.path.join(tar_dir, tsub)
     tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
     delete_dir(tmpdir=tdir)
 
@@ -110,10 +111,11 @@ def collect_log_files(tmp_dir, test=None):
     logger.info("DONE {0}".format(os.path.basename(tar_arch)))
 
 
-def collect_sql_files(tmp_dir, test=None):
+def collect_sql_files(tmp_dir, tar_dir, test=None):
     """
     Collect and compress SQLite databases related to current processing.
-    :param tmp_dir: tarball will be written to this directory
+    :param tmp_dir: copy files for tarball creation to this directory
+    :param tar_dir: tarball written to this directory
     :return:
     """
     logger.info("Collect sqlite files")
@@ -125,7 +127,7 @@ def collect_sql_files(tmp_dir, test=None):
     copy(src=sql_pystat_output, dst=tdir)
     copy(src=sql_pygac_logout, dst=tdir)
 
-    tar_name = os.path.join(tmp_dir, tsub)
+    tar_name = os.path.join(tar_dir, tsub)
     tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
     delete_dir(tmpdir=tdir)
 
@@ -135,34 +137,50 @@ def collect_sql_files(tmp_dir, test=None):
     logger.info("DONE {0}".format(os.path.basename(tar_arch)))
 
 
-def collect_invalid_orbits(tmp_dir, test=None):
+def collect_invalid_orbits(tmp_dir, tar_dir, sy, ey, test=None):
     """
     Collect invalid AVHRR GAC L1c orbits and compress files per satellite.
-    :param tmp_dir: tarballs will be written to this directory
+    :param tmp_dir: copy files for tarball creation to this directory
+    :param tar_dir: tarball written to this directory
+    :param sy: start year
+    :param ey: end year
     :return:
     """
     logger.info("Collect invalid L1c orbits")
 
     sats = pygac_sat_list()
+
     for s in sats:
-        pattern = "ECC_GAC*" + s + "*"
-        files = get_file_list(pattern=pattern, path=relict_dir)
 
-        if files:
-            tsub = pygac_commit + "-invalid_l1c_orbits_" + s
-            tdir = make_temp_dir(temp_dir=tmp_dir, temp_sub=tsub)
+        year = sy
 
-            for f in files:
-                copy(src=f, dst=tdir)
+        while year <= ey:
+            pattern = "ECC_GAC_*" + s + "*_" + str(year) + "*.h5"
+            files = get_file_list(pattern=pattern, path=relict_dir)
 
-            tar_name = os.path.join(tmp_dir, tsub)
-            tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
-            delete_dir(tmpdir=tdir)
+            if files:
+                logger.info("Working on {sat} and {year}".format(sat=s, year=str(year)))
 
-            if not test:
-                copy_to_ecfs_archive(ecfs_dir=proc_history, ecfs_file=tar_arch)
+                files.sort()
+                tsub = pygac_commit + "-invalid_l1c_orbits_" + s + "_" + str(year)
+                tdir = make_temp_dir(temp_dir=tmp_dir, temp_sub=tsub)
 
-            logger.info("DONE {0}".format(os.path.basename(tar_arch)))
+                for f in files:
+                    copy(src=f, dst=tdir)
+
+                tar_name = os.path.join(tar_dir, tsub)
+                tar_arch = make_archive(base_name=tar_name, format='gztar', root_dir=tmp_dir)
+                delete_dir(tmpdir=tdir)
+
+                if not test:
+                    copy_to_ecfs_archive(ecfs_dir=proc_history, ecfs_file=tar_arch)
+
+                logger.info("DONE {0}".format(os.path.basename(tar_arch)))
+                year += 1
+
+            else:
+                year += 1
+                continue
 
 
 if __name__ == '__main__':
@@ -181,7 +199,14 @@ if __name__ == '__main__':
                         help="Collect and save SQL databases.")
 
     parser.add_argument('--invalids', action="store_true",
-                        help="Collect and save invalid AVHRR GAC L1c orbits.")
+                        help="Collect and save invalid AVHRR GAC "
+                        "L1c orbits per satellite and per year.")
+
+    parser.add_argument('--syear', type=int, default='1979',
+                        help='Start Year, e.g. 2000')
+
+    parser.add_argument('--eyear', type=int, default='2017',
+                        help='End Year, e.g. 2006')
 
     parser.add_argument('--test', action="store_true",
                         help="Testing option, copy to ECFS disabled.")
@@ -191,15 +216,22 @@ if __name__ == '__main__':
     # Call function associated with the selected subcommand
     logger.info("{0} start for {1}".format(sys.argv[0], args))
 
-    work_dir = make_temp_dir(temp_dir=datadir, temp_sub=pygac_commit)
+    save_dir = make_temp_dir(temp_dir=datadir, temp_sub=pygac_commit)
 
     if args.logs:
-        collect_log_files(tmp_dir=work_dir, test=args.test)
+        work_dir = make_temp_dir(temp_dir=datadir, temp_sub="save_logs")
+        collect_log_files(tmp_dir=work_dir, tar_dir=save_dir, test=args.test)
+        delete_dir(tmpdir=work_dir)
 
     if args.sqls:
-        collect_sql_files(tmp_dir=work_dir, test=args.test)
+        work_dir = make_temp_dir(temp_dir=datadir, temp_sub="save_sqls")
+        collect_sql_files(tmp_dir=work_dir, tar_dir=save_dir, test=args.test)
+        delete_dir(tmpdir=work_dir)
 
     if args.invalids:
-        collect_invalid_orbits(tmp_dir=work_dir, test=args.test)
+        work_dir = make_temp_dir(temp_dir=datadir, temp_sub="save_invalids")
+        collect_invalid_orbits(tmp_dir=work_dir, tar_dir=save_dir,
+                                sy=args.syear, ey=args.eyear, test=args.test)
+        delete_dir(tmpdir=work_dir)
 
     logger.info("{0} finished!".format(os.path.basename(__file__)))

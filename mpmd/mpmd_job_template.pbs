@@ -16,6 +16,10 @@
 # Define the taskfile
 TASKFILE=%taskfile%
 
+export PATH=/perm/ms/de/sf7/usr/bin:$PATH
+export LD_LIBRARY_PATH=/perm/ms/de/sf7/usr/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=/perm/ms/de/sf7/usr/lib/python2.7/site-packages:$PYTHONPATH
+
 # Define the way we spawn the mpi program depending on the type of host
 if [[ `hostname` == omlws* ]]; then
     # ===========
@@ -48,4 +52,4 @@ else
 fi
 
 # Finally, run the tasks
-$MPIRUN mpmd.py $TASKFILE
+$MPIRUN pycmsaf-mpmd $TASKFILE

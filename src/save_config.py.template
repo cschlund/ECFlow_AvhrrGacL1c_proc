@@ -1,0 +1,80 @@
+#!/usr/bin/env python2.7
+
+import os
+
+# --------------------------------------------------------------------
+# -- modify here
+# --------------------------------------------------------------------
+
+# -- user specific
+user_path = "ms/de/sf7/cschlund"
+clone_path = "GAC_PROC"
+suite = "FINAL_GAC_PROC"
+
+# -- AVHRR GAC L1b input data: weekly_tarfiles
+ecfs_l1b_dir = "ec:/sf3/data/GAC_avhrr_archive"
+# -- AVHRR GAC L1b input data: monthly tarfiles
+#ecfs_l1b_dir = "ec:/sf2/test/gacdb"
+
+# -- PyGAC branch/commit used for PROC & stored in pygac-log SQL
+#    [pygac-branch]_[commitID]_[commit-date]
+#    [feature-clock]_[c8a7b2c]_[20151130]
+#
+# temporary scan motor issue bug-fixed version (NOAA-14, 15, 16).
+pygac_commit = "feature-clock_8216c7c_20161103"
+sql_suffix = "_201611_pygac-commit-8216c7c.sqlite3"
+ecfs_l1c_dir = "ec:/sf7/data/test/3_feature-clock_8216c7c_20161103"
+invalid_subdir = pygac_commit + "_not_copied_to_ecfs"
+
+# this SQL collects all version in one SQL
+sql_suffix_pygaclog = "_201611_pygac-commit-c8a7b2c-efa101a-8216c7c.sqlite3"
+
+# -- save processing history
+proc_history = os.path.join(ecfs_l1c_dir, "proc_history")
+
+# --------------------------------------------------------------------
+# -- don't touch unless you know what you are doing
+# --------------------------------------------------------------------
+
+# -- base directories
+repository = "ECFlow_AvhrrGacL1c_proc"
+perm = os.path.join("/perm", user_path)
+scratch = os.path.join("/scratch", user_path)
+ecfbase = os.path.join(perm, clone_path, repository)
+datadir = os.path.join(scratch, clone_path, repository)
+installdir = "/perm/ms/de/sf7/cschlund"
+pytcode = os.path.join(installdir, "pytAVHRRGACl1c")
+
+# -- same path as @ecgate: config_suite.py
+relict_dir = os.path.join(datadir, invalid_subdir)
+ecp_tar_download = os.path.join(datadir, "ecp_tar_download")
+ecp_tar_upload = os.path.join(datadir, "ecp_tar_upload")
+tar_file_prefix = "AVHRR_GAC_L1C_"
+tar_file_suffix = ".tar.bz2"
+tar_file_suffix2 = ".tar"  # monthly tar files (incl. .tar.bz2 files)
+
+# -- paths to be exported: $PATH, $PYTHONPATH
+python_path = "/usr/local/apps/python/current/bin/python"
+pygac_pythonpath = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages"
+pygac_path = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages" \
+             "/pygac-v0.1.0-py2.7.egg/pygac"
+
+# -- $PERM
+source_dir = os.path.join(ecfbase, "src")
+sqlite_dir = os.path.join(ecfbase, "sql")
+
+# -- sqlite databases
+sql_gacdb_archive = os.path.join(sqlite_dir, "AVHRR_GAC_archive" + sql_suffix)
+sql_pystat_output = os.path.join(sqlite_dir, "AVHRR_GAC_pystat" + sql_suffix)
+sql_pygac_logout = os.path.join(sqlite_dir, "AVHRR_GAC_pygaclog" + sql_suffix_pygaclog)
+
+# -- pygac stuff
+pygac_tle_dir = os.path.join(ecfbase, "tle")
+pygac_tle_txt = "TLE_%(satname)s.txt"
+pygac_prefix = "ECC_GAC"
+pygac_version = "v0.1.0"
+pygac_runtool = os.path.join(pygac_path, "gac_run.py")
+
+# -- pystat and add2sqlite scripts
+pystat_runtool = os.path.join(pytcode, "run_pystat_add2sqlite.py")
+add2sql_runtool = os.path.join(pytcode, "add2sqlite_l1c_info.py")

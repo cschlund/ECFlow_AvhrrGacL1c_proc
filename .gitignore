@@ -12,3 +12,4 @@ mpmd/generated/
 scratch
 sql/*txt
 src/*txt
+src/save_config.py

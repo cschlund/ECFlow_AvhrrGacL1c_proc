@@ -11,7 +11,8 @@ import sys
 import argparse
 import fnmatch
 import subprocess
-from global_config import *
+#from global_config import *
+from save_config import *
 from shutil import make_archive, copy
 from housekeeping import delete_dir
 from pycmsaf.logger import setup_root_logger

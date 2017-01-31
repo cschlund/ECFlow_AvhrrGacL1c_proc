@@ -3,29 +3,42 @@
 import os
 
 # --------------------------------------------------------------------
-# -- modify here -----------------------------------------------------
+# -- modify here
 # --------------------------------------------------------------------
 
-# base path, user specific
-basepath = "ms/de/sf7/cschlund"
-
-# subfolder, where your repository is located
-# e.g. /perm/ms/de/sf7/cschlund/proc/ECFlow_AvhrrGacL1c_proc
-itype = "GAC_PROC"
-
-# suite name
+# -- user specific
+user_path = "ms/de/sf7/cschlund"
+clone_path = "GAC_PROC"
 suite = "FINAL_GAC_PROC"
 
+# -- PyGAC branch/commit used for PROC & stored in pygac-log SQL
+#    <branch-name>_<idnumber>_<date>
+pygac_commit = "feature-clock_c8a7b2c_20151130"
+
+# -- suffix for SQLite databases
+sql_suffix = "_201611_pygac-commit-c8a7b2c.sqlite3"
+
+# -- ecfs directories
+ecfs_l1b_dir = "ec:/sf3/data/GAC_avhrr_archive"
+ecfs_l1c_dir = "ec:/sf7/data/test/feature-clock_c8a7b2c"
+
+# -- monthly tarfiles
+#ecfs_l1b_dir = "ec:/sf2/test/gacdb"
+#ecfs_l1c_dir = "ec:/sf7/data/test"
+
+# -- save processing history
+proc_history = os.path.join(ecfs_l1c_dir, "proc_history")
+
 # --------------------------------------------------------------------
-# -- don't touch -----------------------------------------------------
+# -- don't touch unless you know what you are doing
 # --------------------------------------------------------------------
 
 # -- base directories
 repository = "ECFlow_AvhrrGacL1c_proc"
-perm = os.path.join("/perm", basepath)
-scratch = os.path.join("/scratch", basepath)
-ecfbase = os.path.join(perm, itype, repository)
-datadir = os.path.join(scratch, itype, repository)
+perm = os.path.join("/perm", user_path)
+scratch = os.path.join("/scratch", user_path)
+ecfbase = os.path.join(perm, clone_path, repository)
+datadir = os.path.join(scratch, clone_path, repository)
 installdir = "/perm/ms/de/sf7/cschlund"
 pytcode = os.path.join(installdir, "pytAVHRRGACl1c")
 
@@ -48,10 +61,9 @@ source_dir = os.path.join(ecfbase, "src")
 sqlite_dir = os.path.join(ecfbase, "sql")
 
 # -- sqlite databases
-sql_gacdb_archive = os.path.join(sqlite_dir, 
-        "AVHRR_GAC_archive_only_n7n9_test_data.sqlite3")
-sql_pystat_output = os.path.join(sqlite_dir, 
-        "AVHRR_GAC_pystat_v2_201607_n7n9_test_data.sqlite3")
+sql_gacdb_archive = os.path.join(sqlite_dir, "AVHRR_GAC_archive" + sql_suffix)
+sql_pystat_output = os.path.join(sqlite_dir, "AVHRR_GAC_pystat" + sql_suffix)
+sql_pygac_logout = os.path.join(sqlite_dir, "AVHRR_GAC_pygaclog" + sql_suffix)
 
 # -- pygac stuff
 pygac_tle_dir = os.path.join(ecfbase, "tle")
@@ -60,14 +72,6 @@ pygac_prefix = "ECC_GAC"
 pygac_version = "v0.1.0"
 pygac_runtool = os.path.join(pygac_path, "gac_run.py")
 
-# -- pystat executable
+# -- pystat and add2sqlite scripts
 pystat_runtool = os.path.join(pytcode, "run_pystat_add2sqlite.py")
-
-# -- add2sqlite executable
 add2sql_runtool = os.path.join(pytcode, "add2sqlite_l1c_info.py")
-
-# -- ecfs directories
-#ecfs_l1b_dir = "ec:/sf3/data/GAC_avhrr_archive"
-#ecfs_l1c_dir = "ec:/sf7/data/AVHRR_GAC_L1c_archive_v2"
-ecfs_l1b_dir = "ec:/sf2/test/gacdb"
-ecfs_l1c_dir = "ec:/sf7/data/test"

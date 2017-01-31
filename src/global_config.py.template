@@ -54,7 +54,7 @@ tar_file_suffix2 = ".tar"  # monthly tar files (incl. .tar.bz2 files)
 python_path = "/usr/local/apps/python/current/bin/python"
 pygac_pythonpath = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages"
 pygac_path = "/perm/ms/de/sf7/usr/lib/python2.7/site-packages" \
-             "/pygac-v0.1.0-py2.7.egg/pygac"
+             "/pygac-v0.1.0-py2.7-linux-x86_64.egg/pygac"
 
 # -- $PERM
 source_dir = os.path.join(ecfbase, "src")

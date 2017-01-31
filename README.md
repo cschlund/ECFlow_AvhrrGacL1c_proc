@@ -5,15 +5,18 @@ AVHRR GAC L1c processing using ecflow
 
 Dependencies: You need also to install
 
-    https://github.com/Funkensieper/pycmsaf.git
+    on remote machine (CCA)
+        https://github.com/pytroll/pygac.git
+            branch = feature-clock
 
-    https://github.com/cschlund/pytAVHRRGACl1c.git
+    on local (ECGATE) & remote machine (CCA)
+        https://github.com/Funkensieper/pycmsaf.git
+        https://github.com/cschlund/pytAVHRRGACl1c.git
 
 
 You have to clone this repository twice:
 
     1) local machine, e.g. ecgate: /path/to/repo
-
     2) remote machine, eg.g cca: /path/to/repo
 
 
@@ -28,12 +31,11 @@ please create your suite using "--testcase"
     sqlite database must be placed here required on remote;
     while processing this database will be filled;
 
-        cp /path/to/pycmsaf/AVHRR_GAC_archive.sqlite3 
-        /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_filled.sqlite3
+        (1) remote machine (CCA) for processing
+            cp /perm/ms/de/sf1/gacdb/AVHRR_GAC_archive_l1bonly_20161130.sqlite3 /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_proc_v3.sqlite3
 
-    "AVHRR_GAC_archive.sqlite3": 
-    original database must be located in your pycmsat install.dir.
-    e.g. "/perm/ms/de/sf7/cschlund/pycmsaf/AVHRR_GAC_archive.sqlite3"
+        (2) local machine (ECGATE) for suite creation
+            ln -s /perm/ms/de/sf1/gacdb/AVHRR_GAC_archive_l1bonly_20161130.sqlite3 BASIS_AVHRR_GAC_archive.sqlite3
 
 
 ./src/
@@ -48,7 +50,7 @@ please create your suite using "--testcase"
 
 ./mpmd/
 
-    this is the source code for ecflow required on local machine
+    this is the source code for ecflow required on local machine (ECGATE)
 
     edit config.sh
         adapt all variables and paths!
@@ -68,12 +70,10 @@ please create your suite using "--testcase"
 
     clear directories if necessary
         ./cleanup_local.sh
-        ./cleanup_remote.sh
 
     generate suite definition
         ./create_suite.py -h
         ./create_suite.py --sdate 20080101 --edate 20081231
-
 
     register and load suite
         cd ..
@@ -83,5 +83,6 @@ please create your suite using "--testcase"
 
     open ecflowview GUI
         ecflowview &
+
     and resume suite
 

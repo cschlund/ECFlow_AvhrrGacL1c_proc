@@ -7,11 +7,8 @@ config.sh
 *.log
 *.def
 *test*
-<<<<<<< HEAD
 *.txt
-=======
 mpmd/generated/
 scratch
 sql/*txt
 src/*txt
->>>>>>> 99e099d... git ignore file updated

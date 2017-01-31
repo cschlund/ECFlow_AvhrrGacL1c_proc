@@ -34,15 +34,17 @@ please create your suite using "--testcase"
 
 ./sql/
 
-    "AVHRR_GAC_archive_filled.sqlite3": 
+    "AVHRR_GAC_archive_filled.sqlite3.template": 
     sqlite database must be placed here required on remote;
     while processing this database will be filled;
 
+    ORIG = "/perm/ms/de/sf1/gacdb/AVHRR_GAC_archive_l1bonly_20161130.sqlite3"
+
         (1) remote machine (CCA) for processing
-            cp /perm/ms/de/sf1/gacdb/AVHRR_GAC_archive_l1bonly_20161130.sqlite3 /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_proc_v3.sqlite3
+            cp ${ORIG} /path/to/ECFlow_AvhrrGacL1c_proc/sql/AVHRR_GAC_archive_proc_v3.sqlite3
 
         (2) local machine (ECGATE) for suite creation
-            ln -s /perm/ms/de/sf1/gacdb/AVHRR_GAC_archive_l1bonly_20161130.sqlite3 BASIS_AVHRR_GAC_archive.sqlite3
+            ln -s ${ORIG} BASIS_AVHRR_GAC_archive.sqlite3
 
 
 ./src/

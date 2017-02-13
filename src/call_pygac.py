@@ -117,7 +117,7 @@ for tarfile in tarfiles:
         logger.info("gunzip L1bfile")
 
         f2 = os.path.join(inp, l1bfiles[i])
-        c2 = ["gunzip", f2]
+        c2 = ["gunzip", "-f", f2]
         p2 = subprocess.Popen(c2, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p2.communicate()

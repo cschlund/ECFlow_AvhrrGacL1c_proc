@@ -78,7 +78,6 @@ tarfiles = db.get_tarfiles(start_date=args.start_date,
                            include_blacklisted=False,
                            strict=False)
 
-
 # -- loop tarfiles results
 for tarfile in tarfiles:
 
@@ -86,7 +85,9 @@ for tarfile in tarfiles:
     failed_l1b_orbits = list()
 
     # -- get l1bfile records
-    l1bfiles = db.get_l1bfiles(tarfile=tarfile, include_blacklisted=False)
+    l1bfiles = db.get_l1bfiles(tarfile=tarfile, include_blacklisted=False,
+                               start_date=args.start_date,
+                               end_date=args.end_date)
 
     # -- some settings
     tarbase = os.path.basename(tarfile)
@@ -116,7 +117,7 @@ for tarfile in tarfiles:
         logger.info("gunzip L1bfile")
 
         f2 = os.path.join(inp, l1bfiles[i])
-        c2 = ["gunzip", f2]
+        c2 = ["gunzip", "-f", f2]
         p2 = subprocess.Popen(c2, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         stdout, stderr = p2.communicate()

@@ -8,4 +8,4 @@ export PATH=/usr/local/bin:$PATH
 export ECF_CHECKINTERVAL=30
 
 # start ecflow server
-ecflow_start.sh -p 35818 -d /home/ms/de/sf7/ecflow_logs_cschlund
+module load ecflow && ecflow_start.sh -p 35818 -d /home/ms/de/sf7/ecflow_logs_cschlund

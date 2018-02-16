@@ -18,7 +18,7 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=pygac \
                --length=$LENGTH --memory=3000 \
                --threads_per_task=1 \
-               --walltime=24:00:00 --suite=$SUITE \
+               --walltime=48:00:00 --suite=$SUITE \
                --pbs_queue=np
 
 # register pystat queue
@@ -26,7 +26,7 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=pystat \
                --length=$LENGTH --memory=3000 \
                --threads_per_task=36 \
-               --walltime=24:00:00 --suite=$SUITE \
+               --walltime=48:00:00 --suite=$SUITE \
                --pbs_queue=np
 
 # register archiving queue (uses ECFS)
@@ -34,6 +34,6 @@ mpmd_client.py --dbfile=$MPMD_DATABASE \
                register_queue --name=maketarfile \
                --length=$LENGTH --memory=1024 \
                --threads_per_task=1 \
-               --walltime=12:00:00 --suite=$SUITE \
+               --walltime=24:00:00 --suite=$SUITE \
                --ecfs --pbs_queue=np
 
